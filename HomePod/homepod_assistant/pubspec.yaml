@@ -16,7 +16,7 @@ dependencies:
 
   # HTTP and Networking
   http: ^1.1.0
-  js: ^0.6.7
+  js_interop: ^0.0.1
 
   # Local Storage
   shared_preferences: ^2.2.2

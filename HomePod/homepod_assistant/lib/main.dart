@@ -7,13 +7,13 @@ import 'package:homepod_assistant/screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set preferred orientations for the round display
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -21,7 +21,7 @@ void main() {
       systemNavigationBarColor: Colors.transparent,
     ),
   );
-  
+
   runApp(const HomePodApp());
 }
 

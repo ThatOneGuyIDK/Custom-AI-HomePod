@@ -22,21 +22,33 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
 
   void _initializeSmartHome() {
     _devices = [
-      SmartDevice('Living Room Light', Icons.lightbulb, true, Colors.yellow, DeviceType.light, 'Philips Hue'),
-      SmartDevice('Kitchen Light', Icons.lightbulb, false, Colors.orange, DeviceType.light, 'Philips Hue'),
-      SmartDevice('Bedroom Light', Icons.lightbulb, true, Colors.blue, DeviceType.light, 'Philips Hue'),
-      SmartDevice('Front Door Lock', Icons.lock, false, Colors.green, DeviceType.security, 'August'),
-      SmartDevice('Thermostat', Icons.thermostat, true, Colors.red, DeviceType.climate, 'Nest'),
-      SmartDevice('Security Camera', Icons.videocam, true, Colors.purple, DeviceType.security, 'Ring'),
-      SmartDevice('Garage Door', Icons.garage, false, Colors.grey, DeviceType.security, 'Chamberlain'),
-      SmartDevice('Sprinkler System', Icons.water_drop, false, Colors.cyan, DeviceType.outdoor, 'Rachio'),
+      SmartDevice('Living Room Light', Icons.lightbulb, true, Colors.yellow,
+          DeviceType.light, 'Philips Hue'),
+      SmartDevice('Kitchen Light', Icons.lightbulb, false, Colors.orange,
+          DeviceType.light, 'Philips Hue'),
+      SmartDevice('Bedroom Light', Icons.lightbulb, true, Colors.blue,
+          DeviceType.light, 'Philips Hue'),
+      SmartDevice('Front Door Lock', Icons.lock, false, Colors.green,
+          DeviceType.security, 'August'),
+      SmartDevice('Thermostat', Icons.thermostat, true, Colors.red,
+          DeviceType.climate, 'Nest'),
+      SmartDevice('Security Camera', Icons.videocam, true, Colors.purple,
+          DeviceType.security, 'Ring'),
+      SmartDevice('Garage Door', Icons.garage, false, Colors.grey,
+          DeviceType.security, 'Chamberlain'),
+      SmartDevice('Sprinkler System', Icons.water_drop, false, Colors.cyan,
+          DeviceType.outdoor, 'Rachio'),
     ];
 
     _automations = [
-      Automation('Good Morning', '7:00 AM', 'Turn on lights, adjust thermostat', true, Colors.orange),
-      Automation('Good Night', '10:00 PM', 'Turn off lights, lock doors', true, Colors.blue),
-      Automation('Away Mode', 'Manual', 'Secure home, enable cameras', false, Colors.red),
-      Automation('Movie Time', 'Manual', 'Dim lights, close blinds', false, Colors.purple),
+      Automation('Good Morning', '7:00 AM', 'Turn on lights, adjust thermostat',
+          true, Colors.orange),
+      Automation('Good Night', '10:00 PM', 'Turn off lights, lock doors', true,
+          Colors.blue),
+      Automation('Away Mode', 'Manual', 'Secure home, enable cameras', false,
+          Colors.red),
+      Automation('Movie Time', 'Manual', 'Dim lights, close blinds', false,
+          Colors.purple),
     ];
 
     // Simulate connection
@@ -127,13 +139,15 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               ],
             ),
           ),
-          
+
           // Connection Status
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _isConnected ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+              color: _isConnected
+                  ? Colors.green.withOpacity(0.2)
+                  : Colors.red.withOpacity(0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: _isConnected ? Colors.green : Colors.red,
@@ -172,7 +186,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               ],
             ),
           ),
-          
+
           // Tab Bar
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -186,7 +200,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               ],
             ),
           ),
-          
+
           // Content based on selected tab
           Expanded(
             child: _buildTabContent(),
@@ -302,7 +316,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   Switch(
                     value: device.isOn,
                     onChanged: (value) => _toggleDevice(device),
-                    activeColor: device.color,
+                    activeThumbColor: device.color,
                     activeTrackColor: device.color.withOpacity(0.3),
                   ),
                 ],
@@ -350,7 +364,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: automation.isActive ? automation.color : Colors.grey.withOpacity(0.5),
+              color: automation.isActive
+                  ? automation.color
+                  : Colors.grey.withOpacity(0.5),
               width: 1,
             ),
           ),
@@ -371,7 +387,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                         Text(
                           automation.name,
                           style: TextStyle(
-                            color: automation.isActive ? Colors.white : Colors.grey,
+                            color: automation.isActive
+                                ? Colors.white
+                                : Colors.grey,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -403,7 +421,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   Switch(
                     value: automation.isActive,
                     onChanged: (value) => _toggleAutomation(automation),
-                    activeColor: automation.color,
+                    activeThumbColor: automation.color,
                     activeTrackColor: automation.color.withOpacity(0.3),
                   ),
                 ],
@@ -415,20 +433,26 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () => _runAutomation(automation),
-                      icon: const Icon(Icons.play_arrow, color: Colors.white, size: 16),
-                      label: const Text('Run Now', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      icon: const Icon(Icons.play_arrow,
+                          color: Colors.white, size: 16),
+                      label: const Text('Run Now',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: automation.color,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                       ),
                     ),
                     ElevatedButton.icon(
                       onPressed: () => _editAutomation(automation),
-                      icon: const Icon(Icons.edit, color: Colors.white, size: 16),
-                      label: const Text('Edit', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      icon:
+                          const Icon(Icons.edit, color: Colors.white, size: 16),
+                      label: const Text('Edit',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                       ),
                     ),
                   ],
@@ -463,7 +487,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _isDiscovering ? 'Discovering Devices...' : 'Device Discovery',
+                  _isDiscovering
+                      ? 'Discovering Devices...'
+                      : 'Device Discovery',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -472,7 +498,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  _isDiscovering 
+                  _isDiscovering
                       ? 'Searching for new smart devices on your network'
                       : 'Find and add new smart home devices',
                   style: TextStyle(
@@ -484,13 +510,14 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Discovery Button
           ElevatedButton.icon(
             onPressed: _isDiscovering ? null : _startDeviceDiscovery,
-            icon: Icon(_isDiscovering ? Icons.hourglass_empty : Icons.search, color: Colors.white),
+            icon: Icon(_isDiscovering ? Icons.hourglass_empty : Icons.search,
+                color: Colors.white),
             label: Text(_isDiscovering ? 'Discovering...' : 'Start Discovery'),
             style: ElevatedButton.styleFrom(
               backgroundColor: _isDiscovering ? Colors.grey : Colors.blue,
@@ -498,9 +525,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Manual Add
           Container(
             padding: const EdgeInsets.all(16),
@@ -532,10 +559,12 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                 ElevatedButton.icon(
                   onPressed: () => _showManualAddDialog(),
                   icon: const Icon(Icons.add, color: Colors.white, size: 16),
-                  label: const Text('Add Device', style: TextStyle(color: Colors.white, fontSize: 12)),
+                  label: const Text('Add Device',
+                      style: TextStyle(color: Colors.white, fontSize: 12)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                 ),
               ],
@@ -546,11 +575,13 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     );
   }
 
-  Widget _buildDeviceActionButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildDeviceActionButton(
+      String label, IconData icon, VoidCallback onPressed) {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: Colors.white, size: 16),
-      label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
+      label: Text(label,
+          style: const TextStyle(color: Colors.white, fontSize: 10)),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.grey.withOpacity(0.3),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -562,7 +593,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
   String _formatTime(DateTime time) {
     final now = DateTime.now();
     final difference = now.difference(time);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inMinutes < 60) {
@@ -587,11 +618,15 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Brand: ${device.brand}', style: const TextStyle(color: Colors.white70)),
-            Text('Type: ${device.type.name}', style: const TextStyle(color: Colors.white70)),
-            Text('Status: ${device.isOn ? "ON" : "OFF"}', style: const TextStyle(color: Colors.white70)),
+            Text('Brand: ${device.brand}',
+                style: const TextStyle(color: Colors.white70)),
+            Text('Type: ${device.type.name}',
+                style: const TextStyle(color: Colors.white70)),
+            Text('Status: ${device.isOn ? "ON" : "OFF"}',
+                style: const TextStyle(color: Colors.white70)),
             if (device.lastUpdated != null)
-              Text('Last Updated: ${_formatTime(device.lastUpdated!)}', style: const TextStyle(color: Colors.white70)),
+              Text('Last Updated: ${_formatTime(device.lastUpdated!)}',
+                  style: const TextStyle(color: Colors.white70)),
           ],
         ),
         actions: [
@@ -635,12 +670,16 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                     inactiveColor: Colors.grey.withOpacity(0.3),
                   ),
                 ),
-                const Icon(Icons.brightness_high, color: Colors.white, size: 20),
+                const Icon(Icons.brightness_high,
+                    color: Colors.white, size: 20),
               ],
             ),
             Text(
               '${(brightness * 100).toInt()}%',
-              style: TextStyle(color: device.color, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: device.color,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -654,7 +693,8 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Brightness set to ${(brightness * 100).toInt()}%'),
+                  content:
+                      Text('Brightness set to ${(brightness * 100).toInt()}%'),
                   backgroundColor: device.color,
                 ),
               );
@@ -692,17 +732,22 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   onPressed: () {
                     if (temperature > 60) temperature -= 1;
                   },
-                  icon: const Icon(Icons.remove_circle, color: Colors.white, size: 32),
+                  icon: const Icon(Icons.remove_circle,
+                      color: Colors.white, size: 32),
                 ),
                 Text(
                   '${temperature.toInt()}°F',
-                  style: TextStyle(color: device.color, fontSize: 32, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: device.color,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   onPressed: () {
                     if (temperature < 90) temperature += 1;
                   },
-                  icon: const Icon(Icons.add_circle, color: Colors.white, size: 32),
+                  icon: const Icon(Icons.add_circle,
+                      color: Colors.white, size: 32),
                 ),
               ],
             ),
@@ -766,9 +811,12 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: ${automation.name}', style: const TextStyle(color: Colors.white70)),
-            Text('Time: ${automation.time}', style: const TextStyle(color: Colors.white70)),
-            Text('Description: ${automation.description}', style: const TextStyle(color: Colors.white70)),
+            Text('Name: ${automation.name}',
+                style: const TextStyle(color: Colors.white70)),
+            Text('Time: ${automation.time}',
+                style: const TextStyle(color: Colors.white70)),
+            Text('Description: ${automation.description}',
+                style: const TextStyle(color: Colors.white70)),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -779,7 +827,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   onChanged: (value) {
                     automation.isActive = value;
                   },
-                  activeColor: automation.color,
+                  activeThumbColor: automation.color,
                 ),
               ],
             ),
@@ -812,7 +860,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     String deviceName = '';
     String deviceBrand = '';
     DeviceType selectedType = DeviceType.light;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -829,8 +877,10 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               decoration: const InputDecoration(
                 labelText: 'Device Name',
                 labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white70)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue)),
               ),
               style: const TextStyle(color: Colors.white),
             ),
@@ -840,14 +890,16 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               decoration: const InputDecoration(
                 labelText: 'Brand',
                 labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white70)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue)),
               ),
               style: const TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<DeviceType>(
-              value: selectedType,
+              initialValue: selectedType,
               onChanged: (DeviceType? value) {
                 if (value != null) selectedType = value;
               },
@@ -856,8 +908,10 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               decoration: const InputDecoration(
                 labelText: 'Device Type',
                 labelStyle: TextStyle(color: Colors.white70),
-                enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white70)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue)),
               ),
               items: DeviceType.values.map((DeviceType type) {
                 return DropdownMenuItem<DeviceType>(
@@ -896,7 +950,8 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-            child: const Text('Add Device', style: TextStyle(color: Colors.white)),
+            child:
+                const Text('Add Device', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -943,7 +998,8 @@ class SmartDevice {
   final String brand;
   DateTime? lastUpdated;
 
-  SmartDevice(this.name, this.icon, this.isOn, this.color, this.type, this.brand);
+  SmartDevice(
+      this.name, this.icon, this.isOn, this.color, this.type, this.brand);
 }
 
 class Automation {
@@ -962,4 +1018,4 @@ enum DeviceType {
   climate,
   outlet,
   outdoor,
-} 
+}

@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsWidget extends StatefulWidget {
   final double size;
   final Color? accentColor;
-  
+
   const SettingsWidget({
     super.key,
     this.size = 200,
@@ -21,7 +21,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
     with TickerProviderStateMixin {
   bool _isExpanded = false;
   bool _isLoading = false;
-  
+
   // Settings values
   String _weatherApiKey = '';
   String _spotifyClientId = '';
@@ -40,7 +40,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
   bool _darkMode = true;
   double _brightness = 0.8;
   double _volume = 0.7;
-  
+
   late AnimationController _expandController;
   late Animation<double> _expandAnimation;
   late AnimationController _rotateController;
@@ -60,7 +60,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
       parent: _expandController,
       curve: Curves.easeInOut,
     ));
-    
+
     _rotateController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -72,7 +72,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
       parent: _rotateController,
       curve: Curves.linear,
     ));
-    
+
     _loadSettings();
   }
 
@@ -87,10 +87,10 @@ class _SettingsWidgetState extends State<SettingsWidget>
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       setState(() {
         _weatherApiKey = prefs.getString('weather_api_key') ?? '';
         _spotifyClientId = prefs.getString('spotify_client_id') ?? '';
@@ -98,7 +98,8 @@ class _SettingsWidgetState extends State<SettingsWidget>
         _mqttBroker = prefs.getString('mqtt_broker') ?? 'localhost';
         _mqttUsername = prefs.getString('mqtt_username') ?? '';
         _mqttPassword = prefs.getString('mqtt_password') ?? '';
-        _assistantPrompt = prefs.getString('assistant_prompt') ?? _assistantPrompt;
+        _assistantPrompt =
+            prefs.getString('assistant_prompt') ?? _assistantPrompt;
         _autoLaunch = prefs.getBool('auto_launch') ?? true;
         _darkMode = prefs.getBool('dark_mode') ?? true;
         _brightness = prefs.getDouble('brightness') ?? 0.8;
@@ -121,10 +122,10 @@ class _SettingsWidgetState extends State<SettingsWidget>
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       await prefs.setString('weather_api_key', _weatherApiKey);
       await prefs.setString('spotify_client_id', _spotifyClientId);
       await prefs.setString('spotify_redirect_url', _spotifyRedirectUrl);
@@ -141,7 +142,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
       if (mounted) {
         context.read<AssistantState>().setAssistantPrompt(_assistantPrompt);
       }
-      
+
       // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -174,7 +175,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
     setState(() {
       _isExpanded = !_isExpanded;
     });
-    
+
     if (_isExpanded) {
       _expandController.forward();
       _rotateController.repeat();
@@ -216,7 +217,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
 
   Widget _buildCollapsedSettings() {
     final accentColor = widget.accentColor ?? Colors.teal;
-    
+
     return GestureDetector(
       onTap: _toggleExpanded,
       child: Container(
@@ -255,7 +256,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                 },
               ),
             ),
-            
+
             // Settings label
             Positioned(
               bottom: widget.size * 0.25,
@@ -272,7 +273,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                 ),
               ),
             ),
-            
+
             // Tap indicator
             Positioned(
               bottom: widget.size * 0.1,
@@ -289,7 +290,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                 ),
               ),
             ),
-            
+
             // Expand arrow
             Positioned(
               top: widget.size * 0.05,
@@ -316,7 +317,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
 
   Widget _buildExpandedSettings() {
     final accentColor = widget.accentColor ?? Colors.teal;
-    
+
     return AnimatedBuilder(
       animation: _expandAnimation,
       builder: (context, child) {
@@ -363,7 +364,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                     ),
                   ),
                 ),
-                
+
                 // Settings content
                 Positioned(
                   top: widget.size * 0.15,
@@ -377,23 +378,34 @@ class _SettingsWidgetState extends State<SettingsWidget>
                         _buildSettingSection(
                           'API Configuration',
                           [
-                            _buildTextField('Weather API Key', _weatherApiKey, (value) => _weatherApiKey = value),
-                            _buildTextField('Spotify Client ID', _spotifyClientId, (value) => _spotifyClientId = value),
-                            _buildTextField('Spotify Redirect URL', _spotifyRedirectUrl, (value) => _spotifyRedirectUrl = value),
+                            _buildTextField('Weather API Key', _weatherApiKey,
+                                (value) => _weatherApiKey = value),
+                            _buildTextField(
+                                'Spotify Client ID',
+                                _spotifyClientId,
+                                (value) => _spotifyClientId = value),
+                            _buildTextField(
+                                'Spotify Redirect URL',
+                                _spotifyRedirectUrl,
+                                (value) => _spotifyRedirectUrl = value),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 16),
-                        
+
                         _buildSettingSection(
                           'MQTT Settings',
                           [
-                            _buildTextField('MQTT Broker', _mqttBroker, (value) => _mqttBroker = value),
-                            _buildTextField('MQTT Username', _mqttUsername, (value) => _mqttUsername = value),
-                            _buildTextField('MQTT Password', _mqttPassword, (value) => _mqttPassword = value, isPassword: true),
+                            _buildTextField('MQTT Broker', _mqttBroker,
+                                (value) => _mqttBroker = value),
+                            _buildTextField('MQTT Username', _mqttUsername,
+                                (value) => _mqttUsername = value),
+                            _buildTextField('MQTT Password', _mqttPassword,
+                                (value) => _mqttPassword = value,
+                                isPassword: true),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 16),
 
                         _buildSettingSection(
@@ -408,24 +420,29 @@ class _SettingsWidgetState extends State<SettingsWidget>
                         ),
 
                         const SizedBox(height: 16),
-                        
+
                         _buildSettingSection(
                           'Preferences',
                           [
-                            _buildSwitch('Auto Launch', _autoLaunch, (value) => _autoLaunch = value),
-                            _buildSwitch('Dark Mode', _darkMode, (value) => _darkMode = value),
-                            _buildSlider('Brightness', _brightness, (value) => _brightness = value),
-                            _buildSlider('Volume', _volume, (value) => _volume = value),
+                            _buildSwitch('Auto Launch', _autoLaunch,
+                                (value) => _autoLaunch = value),
+                            _buildSwitch('Dark Mode', _darkMode,
+                                (value) => _darkMode = value),
+                            _buildSlider('Brightness', _brightness,
+                                (value) => _brightness = value),
+                            _buildSlider(
+                                'Volume', _volume, (value) => _volume = value),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 16),
-                        
+
                         // Save button
                         GestureDetector(
                           onTap: _saveSettings,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
                             decoration: BoxDecoration(
                               color: accentColor,
                               borderRadius: BorderRadius.circular(20),
@@ -477,7 +494,8 @@ class _SettingsWidgetState extends State<SettingsWidget>
     );
   }
 
-  Widget _buildTextField(String label, String value, Function(String) onChanged, {bool isPassword = false}) {
+  Widget _buildTextField(String label, String value, Function(String) onChanged,
+      {bool isPassword = false}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: TextField(
@@ -513,7 +531,8 @@ class _SettingsWidgetState extends State<SettingsWidget>
     );
   }
 
-  Widget _buildMultilineField(String label, String value, Function(String) onChanged) {
+  Widget _buildMultilineField(
+      String label, String value, Function(String) onChanged) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: TextField(
@@ -567,7 +586,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: widget.accentColor ?? Colors.teal,
+            activeThumbColor: widget.accentColor ?? Colors.teal,
           ),
         ],
       ),
@@ -597,4 +616,4 @@ class _SettingsWidgetState extends State<SettingsWidget>
       ),
     );
   }
-} 
+}

@@ -21,7 +21,7 @@ class _CalendarAppState extends State<CalendarApp> {
   Future<void> _loadEvents() async {
     // Simulate loading
     await Future.delayed(const Duration(seconds: 1));
-    
+
     setState(() {
       _events = [
         CalendarEvent(
@@ -53,7 +53,7 @@ class _CalendarAppState extends State<CalendarApp> {
           description: 'Watch the new sci-fi movie',
         ),
       ];
-      
+
       _isLoading = false;
     });
   }
@@ -64,7 +64,7 @@ class _CalendarAppState extends State<CalendarApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.pink, width: 2),
       ),
@@ -95,7 +95,7 @@ class _CalendarAppState extends State<CalendarApp> {
               ],
             ),
           ),
-          
+
           // Date Display
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -152,7 +152,7 @@ class _CalendarAppState extends State<CalendarApp> {
               ],
             ),
           ),
-          
+
           if (_isLoading)
             const Expanded(
               child: Center(
@@ -167,7 +167,8 @@ class _CalendarAppState extends State<CalendarApp> {
                 children: [
                   // Events Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     child: Row(
                       children: [
                         const Text(
@@ -189,7 +190,7 @@ class _CalendarAppState extends State<CalendarApp> {
                       ],
                     ),
                   ),
-                  
+
                   // Events List
                   Expanded(
                     child: ListView.builder(
@@ -204,7 +205,8 @@ class _CalendarAppState extends State<CalendarApp> {
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: _getEventColor(event.type).withOpacity(0.5),
+                              color:
+                                  _getEventColor(event.type).withOpacity(0.5),
                             ),
                           ),
                           child: Row(
@@ -245,7 +247,8 @@ class _CalendarAppState extends State<CalendarApp> {
                                           child: Text(
                                             '${event.time} (${event.duration})',
                                             style: TextStyle(
-                                              color: Colors.white.withOpacity(0.7),
+                                              color:
+                                                  Colors.white.withOpacity(0.7),
                                               fontSize: 11,
                                             ),
                                             maxLines: 1,
@@ -271,7 +274,7 @@ class _CalendarAppState extends State<CalendarApp> {
                 ],
               ),
             ),
-          
+
           // Navigation Buttons
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -281,15 +284,18 @@ class _CalendarAppState extends State<CalendarApp> {
                 ElevatedButton.icon(
                   onPressed: () {
                     setState(() {
-                      _selectedDate = _selectedDate.subtract(const Duration(days: 1));
+                      _selectedDate =
+                          _selectedDate.subtract(const Duration(days: 1));
                     });
                   },
-                  icon: const Icon(Icons.chevron_left, color: Colors.white, size: 18),
+                  icon: const Icon(Icons.chevron_left,
+                      color: Colors.white, size: 18),
                   label: const Text('Prev', style: TextStyle(fontSize: 12)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
                 ElevatedButton.icon(
@@ -303,21 +309,25 @@ class _CalendarAppState extends State<CalendarApp> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
                     setState(() {
-                      _selectedDate = _selectedDate.add(const Duration(days: 1));
+                      _selectedDate =
+                          _selectedDate.add(const Duration(days: 1));
                     });
                   },
-                  icon: const Icon(Icons.chevron_right, color: Colors.white, size: 18),
+                  icon: const Icon(Icons.chevron_right,
+                      color: Colors.white, size: 18),
                   label: const Text('Next', style: TextStyle(fontSize: 12)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pink,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
               ],
@@ -330,15 +340,31 @@ class _CalendarAppState extends State<CalendarApp> {
 
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return months[month - 1];
   }
 
   String _getDayName(int weekday) {
     const days = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
     ];
     return days[weekday - 1];
   }
@@ -391,4 +417,4 @@ enum EventType {
   personal,
   health,
   entertainment,
-} 
+}

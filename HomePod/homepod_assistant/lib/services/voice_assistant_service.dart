@@ -8,7 +8,8 @@ import 'package:homepod_assistant/services/web_speech_service.dart';
 import 'dart:math' as math;
 
 class VoiceAssistantService {
-  static final VoiceAssistantService _instance = VoiceAssistantService._internal();
+  static final VoiceAssistantService _instance =
+      VoiceAssistantService._internal();
   factory VoiceAssistantService() => _instance;
   VoiceAssistantService._internal();
 
@@ -17,15 +18,21 @@ class VoiceAssistantService {
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   final WebSpeechService _webSpeechService = WebSpeechService();
   final AIModelService _aiService = AIModelService();
-  
+
   // Stream controllers for real-time updates
-  final StreamController<String> _speechStreamController = StreamController<String>.broadcast();
-  final StreamController<String> _responseStreamController = StreamController<String>.broadcast();
-  final StreamController<double> _volumeStreamController = StreamController<double>.broadcast();
-  final StreamController<bool> _isListeningController = StreamController<bool>.broadcast();
-  final StreamController<String> _debugStreamController = StreamController<String>.broadcast();
-  final StreamController<String> _transcriptionStreamController = StreamController<String>.broadcast();
-  
+  final StreamController<String> _speechStreamController =
+      StreamController<String>.broadcast();
+  final StreamController<String> _responseStreamController =
+      StreamController<String>.broadcast();
+  final StreamController<double> _volumeStreamController =
+      StreamController<double>.broadcast();
+  final StreamController<bool> _isListeningController =
+      StreamController<bool>.broadcast();
+  final StreamController<String> _debugStreamController =
+      StreamController<String>.broadcast();
+  final StreamController<String> _transcriptionStreamController =
+      StreamController<String>.broadcast();
+
   // Configuration
   String _wakeWord = "Hey HomePod";
   String _stopKeyword = "stop";
@@ -43,21 +50,25 @@ class VoiceAssistantService {
   int _restartAttempts = 0;
   static const int _maxRestartAttempts = 5;
   static const Duration _postWakeWindow = Duration(seconds: 8);
-  static const Duration _speechCompletionDebounce = Duration(milliseconds: 1200);
+  static const Duration _speechCompletionDebounce =
+      Duration(milliseconds: 1200);
   bool _hasAudioInput = false; // Track if we've detected any audio input
   double _lastAudioLevel = 0.0; // Track the last audio level detected
   bool _isSpeaking = false; // Prevent self-listening while TTS is active
   bool _useWebSpeechApi = false; // Use Web Speech API instead of speech_to_text
-  String _speechServiceType = "auto"; // "auto", "speech_to_text", "web_speech_api", "unavailable"
-  bool _isProcessingQuery = false; // Track if we're currently processing an AI query
-  
+  String _speechServiceType =
+      "auto"; // "auto", "speech_to_text", "web_speech_api", "unavailable"
+  bool _isProcessingQuery =
+      false; // Track if we're currently processing an AI query
+
   // Getters
   Stream<String> get speechStream => _speechStreamController.stream;
   Stream<String> get responseStream => _responseStreamController.stream;
   Stream<double> get volumeStream => _volumeStreamController.stream;
   Stream<bool> get isListeningStream => _isListeningController.stream;
   Stream<String> get debugStream => _debugStreamController.stream;
-  Stream<String> get transcriptionStream => _transcriptionStreamController.stream;
+  Stream<String> get transcriptionStream =>
+      _transcriptionStreamController.stream;
 
   void _debugLog(String message) {
     _debugStreamController.add(message);
@@ -69,12 +80,12 @@ class VoiceAssistantService {
 
     try {
       _debugLog("🔧 Initializing Voice Assistant...");
-      
+
       // Request microphone permission
       _debugLog("🎤 Requesting microphone permission...");
       final micPermission = await Permission.microphone.request();
       _debugLog("🎤 Microphone permission status: $micPermission");
-      
+
       if (micPermission != PermissionStatus.granted) {
         _debugLog("❌ Microphone permission denied!");
         _debugLog("💡 This might be due to:");
@@ -95,10 +106,10 @@ class VoiceAssistantService {
       _debugLog("   - Host: ${Uri.base.host}");
       _debugLog("   - Port: ${Uri.base.port}");
       _debugLog("   - Is HTTPS: ${Uri.base.scheme == 'https'}");
-      
+
       // Skip Web Speech API entirely - use speech_to_text which was working
       _debugLog("🎯 Using speech_to_text package (Web Speech API disabled)");
-      
+
       // On web platform, use Web Speech API; on other platforms, use speech_to_text
       if (kIsWeb) {
         _debugLog("🌐 Web platform detected - attempting Web Speech API...");
@@ -108,14 +119,20 @@ class VoiceAssistantService {
           if (_speechEnabled) {
             _useWebSpeechApi = true;
             _debugLog("✅ Web Speech API initialized successfully");
-            
+
             // Set up transcription listener
             _webSpeechService.transcriptionStream.listen((transcript) {
-              _debugLog("🎤 Transcribed: $transcript");
-              _lastTranscription = transcript;
-              _processTranscription(transcript);
+              _currentTranscription = transcript;
+
+              _transcriptionStreamController.add(
+                transcript,
+              );
+
+              _scheduleDebouncedSpeechCompletion(
+                transcript.toLowerCase(),
+              );
             });
-            
+
             // Set up error listener
             _webSpeechService.errorStream.listen((error) {
               _debugLog("❌ Web Speech API error: $error");
@@ -129,28 +146,34 @@ class VoiceAssistantService {
       } else {
         _debugLog("📱 Non-web platform - using speech_to_text package");
       }
-      
+
       // Skip speech_to_text on web platform entirely - it has type mismatch issues with browser events
       if (!_useWebSpeechApi && !kIsWeb) {
         _debugLog("🎯 Attempting speech_to_text package...");
         _debugLog("🌐 Note: Speech recognition requires internet connection");
         _debugLog("🔒 Note: Microphone access requires HTTPS (not localhost)");
-        
+
         try {
           _speechEnabled = await _speechToText.initialize(
             onError: (dynamic error) {
               try {
                 // Handle both SpeechRecognitionError and Event types from browser
-                final errorMsg = error is Map ? error['error'] : (error.errorMsg ?? 'unknown');
-                final isPermanent = error is Map ? error['permanent'] ?? false : (error.permanent ?? false);
-                
+                final errorMsg = error is Map
+                    ? error['error']
+                    : (error.errorMsg ?? 'unknown');
+                final isPermanent = error is Map
+                    ? error['permanent'] ?? false
+                    : (error.permanent ?? false);
+
                 _debugLog("❌ Speech recognition error: $errorMsg");
-                _debugLog("❌ Error details: ${isPermanent ? 'Permanent' : 'Temporary'} error");
+                _debugLog(
+                    "❌ Error details: ${isPermanent ? 'Permanent' : 'Temporary'} error");
                 _debugLog("🌐 Current URL: ${Uri.base}");
-                
+
                 // Provide specific guidance based on error type
                 if (errorMsg.toString().contains('network')) {
-                  _debugLog("🌐 Network error - trying to connect to speech service...");
+                  _debugLog(
+                      "🌐 Network error - trying to connect to speech service...");
                   _debugLog("💡 This might be due to:");
                   _debugLog("   - Ngrok tunnel blocking speech API calls");
                   _debugLog("   - CORS issues with speech service");
@@ -158,11 +181,12 @@ class VoiceAssistantService {
                   _debugLog("   - Speech service temporarily unavailable");
                 } else if (errorMsg.toString().contains('not-allowed')) {
                   _debugLog("🚫 Microphone access denied - HTTPS required");
-                  _debugLog("💡 Make sure you clicked 'Allow' on the microphone permission");
+                  _debugLog(
+                      "💡 Make sure you clicked 'Allow' on the microphone permission");
                 } else if (errorMsg.toString().contains('no-speech')) {
                   _debugLog("🔇 No speech detected - this is normal");
                 }
-                
+
                 // Don't stop listening for temporary errors, just log them
                 if (isPermanent) {
                   _isListening = false;
@@ -183,13 +207,17 @@ class VoiceAssistantService {
                   // Restart listening if we're supposed to be listening
                   if (_isListening) {
                     _restartTimer?.cancel();
-                    _restartTimer = Timer(const Duration(milliseconds: 1000), () {
-                      if (_isListening && _restartAttempts < _maxRestartAttempts) {
+                    _restartTimer =
+                        Timer(const Duration(milliseconds: 1000), () {
+                      if (_isListening &&
+                          _restartAttempts < _maxRestartAttempts) {
                         _restartAttempts++;
-                        _debugLog("🔄 Restart attempt $_restartAttempts/$_maxRestartAttempts");
+                        _debugLog(
+                            "🔄 Restart attempt $_restartAttempts/$_maxRestartAttempts");
                         _startListeningInternal();
                       } else if (_restartAttempts >= _maxRestartAttempts) {
-                        _debugLog("❌ Max restart attempts reached; stopping listening");
+                        _debugLog(
+                            "❌ Max restart attempts reached; stopping listening");
                         _isListening = false;
                         _isListeningController.add(false);
                       }
@@ -206,7 +234,8 @@ class VoiceAssistantService {
           _speechEnabled = false;
         }
       } else if (kIsWeb) {
-        _debugLog("⚠️ Speech_to_text disabled on web platform (browser compatibility issues)");
+        _debugLog(
+            "⚠️ Speech_to_text disabled on web platform (browser compatibility issues)");
         _debugLog("💡 Using Web Speech API instead...");
       }
 
@@ -238,18 +267,18 @@ class VoiceAssistantService {
       await _flutterTts.setVolume(1.0);
       await _flutterTts.setPitch(1.0);
       await _flutterTts.awaitSpeakCompletion(true);
-      
+
       // Set up TTS callbacks
       _flutterTts.setStartHandler(() {
         _isSpeaking = true;
         _debugLog("🔊 TTS started");
       });
-      
+
       _flutterTts.setCompletionHandler(() {
         _isSpeaking = false;
         _debugLog("🔊 TTS completed");
       });
-      
+
       _flutterTts.setErrorHandler((msg) {
         _isSpeaking = false;
         _debugLog("❌ TTS error: $msg");
@@ -281,12 +310,12 @@ class VoiceAssistantService {
   /// Start listening for voice input
   Future<void> startListening() async {
     _debugLog("🎤 Starting to listen...");
-    
+
     if (!_isInitialized) {
       _debugLog("🔄 Not initialized, initializing first...");
       await initialize();
     }
-    
+
     try {
       if (!_speechEnabled) {
         _debugLog("❌ Speech recognition not available!");
@@ -300,36 +329,35 @@ class VoiceAssistantService {
       _transcriptionStreamController.add(_currentTranscription);
       _restartAttempts = 0; // Reset restart attempts
       _debugLog("✅ Listening state set to true");
-      
+
       // Start volume monitoring
       _startVolumeMonitoring();
 
       if (_useWebSpeechApi) {
-         _debugLog("🌐 Starting Web Speech API...");
-         bool started = await _webSpeechService.startListening();
-         if (!started) {
-           _debugLog("❌ Failed to start Web Speech API, trying manual start...");
-           started = await _webSpeechService.manualStart();
-           
-           if (!started) {
-             _debugLog("❌ Manual start failed, trying force restart...");
-             bool restarted = await _webSpeechService.forceRestart();
-             if (restarted) {
-               started = await _webSpeechService.startListening();
-             }
-           }
-           
-           if (!started) {
-             _debugLog("❌ Web Speech API still not working; stopping listening");
-             _isListening = false;
-             _isListeningController.add(false);
-           }
-         }
-       } else {
+        _debugLog("🌐 Starting Web Speech API...");
+        bool started = await _webSpeechService.startListening();
+        if (!started) {
+          _debugLog("❌ Failed to start Web Speech API, trying manual start...");
+          started = await _webSpeechService.manualStart();
+
+          if (!started) {
+            _debugLog("❌ Manual start failed, trying force restart...");
+            bool restarted = await _webSpeechService.forceRestart();
+            if (restarted) {
+              started = await _webSpeechService.startListening();
+            }
+          }
+
+          if (!started) {
+            _debugLog("❌ Web Speech API still not working; stopping listening");
+            _isListening = false;
+            _isListeningController.add(false);
+          }
+        }
+      } else {
         _debugLog("🎤 Starting speech_to_text...");
         await _startListeningInternal();
       }
-      
     } catch (e) {
       _debugLog("❌ Error starting listening: $e");
       _isListening = false;
@@ -343,13 +371,14 @@ class VoiceAssistantService {
     try {
       await _speechToText.listen(
         onResult: (result) {
-          _debugLog("🎯 Speech result: ${result.recognizedWords} (final: ${result.finalResult})");
+          _debugLog(
+              "🎯 Speech result: ${result.recognizedWords} (final: ${result.finalResult})");
 
           if (_isSpeaking) {
             _debugLog("🔇 Ignoring recognition while TTS is speaking");
             return;
           }
-          
+
           // Update transcription in real-time (even partial results)
           if (result.recognizedWords.isNotEmpty) {
             _currentTranscription = result.recognizedWords;
@@ -357,21 +386,22 @@ class VoiceAssistantService {
             _debugLog("📝 Live transcription: '$result.recognizedWords'");
 
             if (_isListening && !_isSpeaking) {
-              _scheduleDebouncedSpeechCompletion(result.recognizedWords.toLowerCase());
+              _scheduleDebouncedSpeechCompletion(
+                  result.recognizedWords.toLowerCase());
             }
           }
-          
+
           if (result.finalResult) {
             final recognizedWords = result.recognizedWords.toLowerCase();
             _debugLog("✅ Final recognized words: '$recognizedWords'");
-            
+
             // Reset restart attempts on successful recognition
             _restartAttempts = 0;
-            
+
             _speechCompletionTimer?.cancel();
             _pendingTranscript = '';
             _handleRecognizedInput(recognizedWords);
-            
+
             // Clear transcription after processing
             _currentTranscription = '';
             _transcriptionStreamController.add(_currentTranscription);
@@ -382,9 +412,10 @@ class VoiceAssistantService {
         localeId: "en_US",
         partialResults: true, // Enable partial results for real-time feedback
         cancelOnError: false, // Don't cancel on temporary errors
-        listenMode: stt.ListenMode.confirmation, // Use confirmation mode for better accuracy
+        listenMode: stt.ListenMode
+            .confirmation, // Use confirmation mode for better accuracy
       );
-      
+
       _debugLog("✅ Started listening for voice input");
     } catch (e) {
       _debugLog("❌ Error in _startListeningInternal: $e");
@@ -403,7 +434,7 @@ class VoiceAssistantService {
       _pendingTranscript = '';
       _transcriptionStreamController.add(_currentTranscription);
       _restartAttempts = 0; // Reset restart attempts
-      
+
       // Stop timers
       _volumeTimer?.cancel();
       _restartTimer?.cancel();
@@ -416,7 +447,7 @@ class VoiceAssistantService {
         // Stop speech_to_text
         await _speechToText.stop();
       }
-      
+
       _debugLog("✅ Stopped listening");
     } catch (e) {
       _debugLog("❌ Error stopping listening: $e");
@@ -426,7 +457,7 @@ class VoiceAssistantService {
   /// Process wake word detection
   void _processWakeWordDetection(String recognizedWords) {
     _debugLog("🔔 Wake word detected: $recognizedWords");
-    
+
     // Remove wake word and process the rest
     final cleanInput = _removeWakeWord(recognizedWords);
     if (cleanInput.isNotEmpty) {
@@ -508,7 +539,7 @@ class VoiceAssistantService {
 
       // Consume wake window on first accepted command
       _wakeWindowExpiresAt = null;
-      
+
       // Check for stop keyword first
       if (_isStopKeywordDetected(input)) {
         _debugLog("🛑 Stop keyword detected: '$input'");
@@ -518,28 +549,28 @@ class VoiceAssistantService {
         await speak("Stopping");
         return;
       }
-      
+
       // Clean the input by removing punctuation
       final cleanedInput = _removePunctuation(input);
       _debugLog("🧹 Cleaned input: '$input' -> '$cleanedInput'");
-      
+
       // Add to speech stream
       _speechStreamController.add(cleanedInput);
-      
+
       // Process with AI
       _debugLog("🤖 Sending to AI...");
       _isProcessingQuery = true;
       final response = await _processWithAI(cleanedInput);
-      
+
       // Check if query was cancelled while processing
       if (!_isProcessingQuery) {
         _responseStreamController.add('');
         _debugLog("🚫 Query was cancelled, not speaking response");
         return;
       }
-      
+
       _isProcessingQuery = false;
-      
+
       if (response.isNotEmpty) {
         _responseStreamController.add(response);
         _debugLog("🔊 Speaking response: '$response'");
@@ -549,7 +580,8 @@ class VoiceAssistantService {
       }
     } catch (e) {
       _isProcessingQuery = false;
-      _responseStreamController.add("I'm sorry, I ran into a problem. Please try again.");
+      _responseStreamController
+          .add("I'm sorry, I ran into a problem. Please try again.");
       _debugLog("❌ Error processing recognized speech: $e");
     }
   }
@@ -571,38 +603,23 @@ class VoiceAssistantService {
   /// Check if wake word is detected
   bool _isWakeWordDetected(String input) {
     final detected = input.contains(_wakeWord.toLowerCase());
-    _debugLog("🔍 Wake word check: '$input' contains '${_wakeWord.toLowerCase()}' = $detected");
+    _debugLog(
+        "🔍 Wake word check: '$input' contains '${_wakeWord.toLowerCase()}' = $detected");
     return detected;
   }
 
   /// Check if stop keyword is detected
   bool _isStopKeywordDetected(String input) {
     final detected = input.contains(_stopKeyword.toLowerCase());
-    _debugLog("🛑 Stop keyword check: '$input' contains '${_stopKeyword.toLowerCase()}' = $detected");
+    _debugLog(
+        "🛑 Stop keyword check: '$input' contains '${_stopKeyword.toLowerCase()}' = $detected");
     return detected;
-  }
-
-  /// Activate a short grace period after wake word detection.
-  void _activateWakeWindow() {
-    _wakeWindowExpiresAt = DateTime.now().add(_postWakeWindow);
-    _debugLog("🕒 Wake window active for ${_postWakeWindow.inSeconds}s");
-  }
-
-  /// Check whether we are inside the post-wake grace window.
-  bool _isWakeWindowActive() {
-    final expiresAt = _wakeWindowExpiresAt;
-    if (expiresAt == null) return false;
-
-    final active = DateTime.now().isBefore(expiresAt);
-    if (!active) {
-      _wakeWindowExpiresAt = null;
-    }
-    return active;
   }
 
   /// Remove wake word from input
   String _removeWakeWord(String input) {
-    final cleaned = input.replaceAll(RegExp(_wakeWord, caseSensitive: false), '').trim();
+    final cleaned =
+        input.replaceAll(RegExp(_wakeWord, caseSensitive: false), '').trim();
     _debugLog("🧹 Removed wake word: '$input' -> '$cleaned'");
     return cleaned;
   }
@@ -633,7 +650,8 @@ class VoiceAssistantService {
       _isSpeaking = false;
 
       if (wasListening && !_isListening) {
-        _debugLog("⏱️ Waiting 500ms before resuming listening to avoid self-listening...");
+        _debugLog(
+            "⏱️ Waiting 500ms before resuming listening to avoid self-listening...");
         await Future.delayed(const Duration(milliseconds: 500));
         _debugLog("🎤 Resuming listening after TTS");
         await startListening();
@@ -651,6 +669,7 @@ class VoiceAssistantService {
       _debugLog("❌ Error stopping TTS: $e");
     }
   }
+
   /// Start volume monitoring using speech recognition
   void _startVolumeMonitoring() {
     _debugLog("📊 Starting volume monitoring...");
@@ -663,22 +682,25 @@ class VoiceAssistantService {
         timer.cancel();
         return;
       }
-      
+
       // For real speech recognition, be very responsive to actual audio
       const baseVolume = 0.0; // Start at 0
-      
+
       // Check if we have any transcription (indicates audio was detected)
       if (_currentTranscription.isNotEmpty) {
         // We have audio input - show responsive volume
         _hasAudioInput = true;
-        final audioLevel = 0.4 + (math.sin(DateTime.now().millisecondsSinceEpoch * 0.03) * 0.25);
+        final audioLevel = 0.4 +
+            (math.sin(DateTime.now().millisecondsSinceEpoch * 0.03) * 0.25);
         _lastAudioLevel = audioLevel;
         _volumeStreamController.add(audioLevel);
-        _debugLog("🎤 Real voice detected! Volume: ${(audioLevel * 100).toStringAsFixed(1)}%");
+        _debugLog(
+            "🎤 Real voice detected! Volume: ${(audioLevel * 100).toStringAsFixed(1)}%");
       } else {
         // No audio input detected - keep volume very low but show we're listening
         _hasAudioInput = false;
-        final volume = baseVolume + (math.sin(DateTime.now().millisecondsSinceEpoch * 0.01) * 0.02);
+        final volume = baseVolume +
+            (math.sin(DateTime.now().millisecondsSinceEpoch * 0.01) * 0.02);
         _volumeStreamController.add(volume.clamp(0.0, 0.05));
       }
     });
@@ -727,31 +749,31 @@ class VoiceAssistantService {
   Future<bool> testMicrophoneAccess() async {
     try {
       _debugLog("🎤 Testing microphone access...");
-      
+
       // Check permission status
       final permissionStatus = await Permission.microphone.status;
       _debugLog("🎤 Current permission status: $permissionStatus");
-      
+
       if (permissionStatus == PermissionStatus.denied) {
         _debugLog("❌ Microphone permission denied");
         return false;
       }
-      
+
       if (permissionStatus == PermissionStatus.restricted) {
         _debugLog("🚫 Microphone access restricted");
         return false;
       }
-      
+
       if (permissionStatus == PermissionStatus.permanentlyDenied) {
         _debugLog("🚫 Microphone permanently denied");
         return false;
       }
-      
+
       if (permissionStatus == PermissionStatus.granted) {
         _debugLog("✅ Microphone permission granted");
         return true;
       }
-      
+
       // Request permission if not determined
       if (permissionStatus == PermissionStatus.denied) {
         _debugLog("🤔 Permission denied, requesting...");
@@ -759,7 +781,7 @@ class VoiceAssistantService {
         _debugLog("🎤 Permission request result: $result");
         return result == PermissionStatus.granted;
       }
-      
+
       return false;
     } catch (e) {
       _debugLog("❌ Error testing microphone: $e");
@@ -771,7 +793,7 @@ class VoiceAssistantService {
   Future<bool> testSpeechRecognition() async {
     try {
       _debugLog("🎯 Testing speech recognition availability...");
-      
+
       // Test if speech recognition can be initialized
       final available = await _speechToText.initialize(
         onError: (error) {
@@ -781,7 +803,7 @@ class VoiceAssistantService {
           _debugLog("📊 Speech recognition test status: $status");
         },
       );
-      
+
       _debugLog("🎯 Speech recognition available: $available");
       return available;
     } catch (e) {
@@ -793,30 +815,29 @@ class VoiceAssistantService {
   /// Get detailed system information for debugging
   Future<Map<String, dynamic>> getSystemInfo() async {
     final info = <String, dynamic>{};
-    
+
     try {
       // Test microphone
       info['microphone_access'] = await testMicrophoneAccess();
-      
+
       // Test speech recognition
       info['speech_recognition'] = await testSpeechRecognition();
-      
+
       // Check initialization status
       info['initialized'] = _isInitialized;
-      
+
       // Check listening status
       info['listening'] = _isListening;
-      
+
       // Check audio input detection
       info['has_audio_input'] = _hasAudioInput;
       info['last_audio_level'] = _lastAudioLevel;
-      
+
       _debugLog("📊 System Info: $info");
-      
     } catch (e) {
       _debugLog("❌ Error getting system info: $e");
     }
-    
+
     return info;
   }
 
@@ -834,4 +855,4 @@ class VoiceAssistantService {
     _speechCompletionTimer?.cancel();
     _speechToText.cancel();
   }
-} 
+}
