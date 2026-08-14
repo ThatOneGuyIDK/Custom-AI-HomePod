@@ -221,36 +221,39 @@ class _VolumeAppState extends State<VolumeApp> {
     required Color color,
     required ValueChanged<double> onChanged,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: color, size: 24),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+    return ListTileTheme(
+      style: ListTileStyle.drawer,
+      child: ListTile(
+        leading: Icon(icon, color: color, size: 24),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ),
-      subtitle: Text(
-        '${(volume * 100).round()}%',
-        style: TextStyle(
-          color: color,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
+        subtitle: Text(
+          '${(volume * 100).round()}%',
+          style: TextStyle(
+            color: color,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      trailing: SizedBox(
-        width: 100,
-        child: Slider(
-          value: volume,
-          onChanged: onChanged,
-          activeColor: color,
-          inactiveColor: color.withOpacity(0.3),
-          min: 0.0,
-          max: 1.0,
+        trailing: SizedBox(
+          width: 100,
+          child: Slider(
+            value: volume,
+            onChanged: onChanged,
+            activeColor: color,
+            inactiveColor: color.withOpacity(0.3),
+            min: 0.0,
+            max: 1.0,
+          ),
         ),
+        contentPadding: EdgeInsets.zero,
       ),
-      contentPadding: EdgeInsets.zero,
     );
   }
 } 

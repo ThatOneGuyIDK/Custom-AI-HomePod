@@ -89,40 +89,47 @@ For complete Raspberry Pi setup instructions, see **[RASPBERRY_PI_DEPLOYMENT.md]
 
 ```
 lib/
-├── main.dart                 # App entry point
-├── providers/
-│   └── assistant_state.dart  # Voice assistant state management
+├── main.dart                 # App entry point, provider registration
+├── providers/                # State management (ChangeNotifier pattern)
+│   ├── assistant_state.dart  # Voice assistant state
+│   ├── weather_provider.dart # Weather data, caching, location
+│   └── news_provider.dart    # News data, caching, multi-source
+├── services/                 # API clients (HTTP, external services)
+│   ├── weather_service.dart  # OpenWeatherMap API client
+│   └── news_service.dart     # GNews API + RSS feed client
+├── apps/                     # Full-screen app dialogs
+│   ├── weather_app.dart      # Weather UI (tabs: current/forecast/alerts)
+│   ├── news_app.dart         # News UI (tabs: global/tech/local)
+│   └── ...                   # Other apps
+├── widgets/                  # Home screen circular widgets
+│   ├── clock_widget.dart     # Time display
+│   ├── weather_widget.dart   # Weather preview
+│   ├── news_widget.dart      # News headlines rotation
+│   └── ...                   # Other widgets
 ├── screens/
 │   └── home_screen.dart      # Main circular interface
-├── widgets/
-│   ├── clock_widget.dart     # Time display
-│   ├── weather_widget.dart   # Weather information
-│   ├── assistant_indicator.dart # Voice assistant status
-│   └── volume_control.dart   # Volume adjustment
-├── services/                 # API and external service integrations
-├── models/                   # Data models
+├── config/
+│   └── app_config.dart       # Static configuration constants
 └── assets/                   # Images, sounds, and animations
 ```
 
+### Architecture Pattern (3-Layer)
+Each feature follows the same pattern:
+1. **Service** (`lib/services/`) - HTTP client, API calls, JSON parsing
+2. **Provider** (`lib/providers/`) - State management, caching, error handling
+3. **App/Widget** (`lib/apps/`, `lib/widgets/`) - UI, user interaction
+
 ## Configuration
 
-### Environment Setup
-Create a `.env` file in the project root:
-```env
-# Weather API
-OPENWEATHER_API_KEY=your_api_key_here
-
-# Spotify API
-SPOTIFY_CLIENT_ID=your_client_id_here
-SPOTIFY_CLIENT_SECRET=your_client_secret_here
-
-# Local AI Assistant
-LOCAL_AI_URL=http://localhost:8080
-
-# MQTT Configuration
-MQTT_BROKER=localhost
-MQTT_PORT=1883
+### API Key Setup
+Copy `lib/config/app_config_example.dart` to `lib/config/app_config.dart` and replace the placeholder values with your real API keys:
+```dart
+// In lib/config/app_config.dart
+static const String weatherApiKey = 'your_openweather_key_here';
+static const String spotifyClientId = 'your_spotify_client_id_here';
+static const String spotifyClientSecret = 'your_spotify_client_secret_here';
 ```
+The real `app_config.dart` is gitignored and will never be committed.
 
 ## Development Roadmap
 

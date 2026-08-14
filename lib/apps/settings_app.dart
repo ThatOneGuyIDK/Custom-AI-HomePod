@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:homepod_assistant/providers/app_config.dart';
+import 'package:homepod_assistant/providers/weather_provider.dart';
 import 'package:homepod_assistant/providers/assistant_state.dart';
 import 'package:homepod_assistant/services/brightness_service.dart';
 import 'package:homepod_assistant/services/volume_service.dart';
@@ -243,15 +243,15 @@ class _SettingsAppState extends State<SettingsApp> {
                 const Divider(color: Colors.white24),
                 
                 // Weather Location
-                Consumer<AppConfig>(
-                  builder: (context, appConfig, child) {
+                Consumer<WeatherProvider>(
+                  builder: (context, weatherProvider, child) {
                     return _buildSettingTile(
                       icon: Icons.location_on,
                       title: 'Weather Location',
-                      subtitle: appConfig.weatherLocation,
+                      subtitle: weatherProvider.weatherLocation,
                       trailing: IconButton(
                         icon: const Icon(Icons.edit, color: Colors.grey),
-                        onPressed: () => _showWeatherLocationDialog(context, appConfig),
+                        onPressed: () => _showWeatherLocationDialog(context, weatherProvider),
                       ),
                     );
                   },
@@ -339,25 +339,28 @@ class _SettingsAppState extends State<SettingsApp> {
     required String subtitle,
     required Widget trailing,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.grey, size: 24),
-      title: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+    return ListTileTheme(
+      style: ListTileStyle.drawer,
+      child: ListTile(
+        leading: Icon(icon, color: Colors.grey, size: 24),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          color: Colors.white.withOpacity(0.7),
-          fontSize: 12,
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.7),
+            fontSize: 12,
+          ),
         ),
+        trailing: trailing,
+        contentPadding: EdgeInsets.zero,
       ),
-      trailing: trailing,
-      contentPadding: EdgeInsets.zero,
     );
   }
 
@@ -529,18 +532,18 @@ class _SettingsAppState extends State<SettingsApp> {
     );
    }
 
-   void _showWeatherLocationDialog(BuildContext context, AppConfig appConfig) {
+   void _showWeatherLocationDialog(BuildContext context, WeatherProvider weatherProvider) {
      showDialog(
        context: context,
-       builder: (context) => WeatherLocationDialog(appConfig: appConfig),
+       builder: (context) => WeatherLocationDialog(weatherProvider: weatherProvider),
      );
    }
  }
  
  class WeatherLocationDialog extends StatefulWidget {
-   final AppConfig appConfig;
+   final WeatherProvider weatherProvider;
    
-   const WeatherLocationDialog({super.key, required this.appConfig});
+   const WeatherLocationDialog({super.key, required this.weatherProvider});
  
    @override
    State<WeatherLocationDialog> createState() => _WeatherLocationDialogState();
@@ -627,7 +630,7 @@ class _SettingsAppState extends State<SettingsApp> {
              
              // Location List
              Expanded(
-               child: Consumer<AppConfig>(
+               child: Consumer<WeatherProvider>(
                  builder: (context, config, child) {
                    final allLocations = config.getSuggestedLocations();
                    final locations = _searchQuery.isEmpty 
@@ -645,45 +648,48 @@ class _SettingsAppState extends State<SettingsApp> {
                        final isCurrent = location == config.weatherLocation;
                        final isFavorite = config.favoriteLocations.contains(location);
                        
-                       return ListTile(
-                         leading: Icon(
-                           isCurrent ? Icons.my_location : Icons.location_on,
-                           color: isCurrent ? Colors.grey : Colors.white70,
-                         ),
-                         title: Text(
-                           location,
-                           style: TextStyle(
-                             color: isCurrent ? Colors.grey : Colors.white,
-                             fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                           ),
-                           maxLines: 1,
-                           overflow: TextOverflow.ellipsis,
-                         ),
-                         trailing: Row(
-                           mainAxisSize: MainAxisSize.min,
-                           children: [
-                             if (isCurrent)
-                               const Icon(Icons.check, color: Colors.grey, size: 20)
-                             else if (isFavorite)
-                               const Icon(Icons.favorite, color: Colors.red, size: 20)
-                             else
-                               IconButton(
-                                 icon: const Icon(Icons.favorite_border, color: Colors.white70, size: 20),
-                                 onPressed: () => config.addFavoriteLocation(location),
-                               ),
-                           ],
-                         ),
-                         onTap: () {
-                           config.setWeatherLocation(location);
-                           Navigator.of(context).pop();
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(
-                               content: Text('Weather location set to $location'),
-                               backgroundColor: Colors.green,
-                             ),
-                           );
-                         },
-                       );
+                        return ListTileTheme(
+                          style: ListTileStyle.drawer,
+                          child: ListTile(
+                            leading: Icon(
+                              isCurrent ? Icons.my_location : Icons.location_on,
+                              color: isCurrent ? Colors.grey : Colors.white70,
+                            ),
+                            title: Text(
+                              location,
+                              style: TextStyle(
+                                color: isCurrent ? Colors.grey : Colors.white,
+                                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isCurrent)
+                                  const Icon(Icons.check, color: Colors.grey, size: 20)
+                                else if (isFavorite)
+                                  const Icon(Icons.favorite, color: Colors.red, size: 20)
+                                else
+                                  IconButton(
+                                    icon: const Icon(Icons.favorite_border, color: Colors.white70, size: 20),
+                                    onPressed: () => config.addFavoriteLocation(location),
+                                  ),
+                              ],
+                            ),
+                            onTap: () {
+                              config.setWeatherLocation(location);
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Weather location set to $location'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                          ),
+                        );
                      },
                    );
                  },

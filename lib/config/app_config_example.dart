@@ -1,6 +1,9 @@
+// Copy this file to app_config.dart and fill in your real API keys
+// The real app_config.dart is gitignored to keep secrets out of version control
+
 class AppConfig {
   // Weather API Configuration
-  static const String weatherApiKey = '3ac6a4a454d725268d7c189db8d25c01';
+  static const String weatherApiKey = 'YOUR_OPENWEATHER_API_KEY_HERE';
   static const String weatherBaseUrl = 'https://api.openweathermap.org/data/2.5';
 
   // News API Configuration
@@ -194,4 +197,4 @@ class AppConfig {
     'reduced_motion': false,
     'color_blind_support': false,
   };
-} 
+}

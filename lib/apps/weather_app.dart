@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:homepod_assistant/providers/app_config.dart';
+import 'package:homepod_assistant/providers/weather_provider.dart';
 
 class WeatherApp extends StatefulWidget {
   const WeatherApp({super.key});
@@ -10,154 +10,106 @@ class WeatherApp extends StatefulWidget {
 }
 
 class _WeatherAppState extends State<WeatherApp> {
-  MockWeather? _currentWeather;
-  List<MockWeather> _forecast = [];
-  List<WeatherAlert> _alerts = [];
-  bool _isLoading = true;
   int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadWeather();
   }
 
-  Future<void> _loadWeather() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    setState(() {
-      _currentWeather = MockWeather(
-        temperature: 72,
-        condition: 'Sunny',
-        humidity: 45,
-        windSpeed: 8,
-        icon: '☀️',
-        feelsLike: 74,
-        uvIndex: 6,
-        visibility: 10,
-        pressure: 1013,
-      );
-      
-      _forecast = [
-        MockWeather(temperature: 75, condition: 'Partly Cloudy', humidity: 50, windSpeed: 10, icon: '⛅', feelsLike: 77, uvIndex: 5, visibility: 9, pressure: 1012),
-        MockWeather(temperature: 68, condition: 'Rainy', humidity: 80, windSpeed: 15, icon: '🌧️', feelsLike: 70, uvIndex: 2, visibility: 5, pressure: 1008),
-        MockWeather(temperature: 70, condition: 'Cloudy', humidity: 60, windSpeed: 12, icon: '☁️', feelsLike: 72, uvIndex: 3, visibility: 8, pressure: 1010),
-        MockWeather(temperature: 78, condition: 'Sunny', humidity: 40, windSpeed: 6, icon: '☀️', feelsLike: 80, uvIndex: 7, visibility: 10, pressure: 1014),
-        MockWeather(temperature: 72, condition: 'Partly Cloudy', humidity: 55, windSpeed: 9, icon: '⛅', feelsLike: 74, uvIndex: 4, visibility: 9, pressure: 1011),
-      ];
-
-      _alerts = [
-        WeatherAlert('Heat Advisory', 'High temperatures expected', 'High', Colors.orange, DateTime.now().add(const Duration(hours: 2))),
-        WeatherAlert('Air Quality Alert', 'Poor air quality conditions', 'Medium', Colors.yellow, DateTime.now().add(const Duration(hours: 6))),
-      ];
-      
-      _isLoading = false;
-    });
+  void _searchLocation(String query, WeatherProvider weatherProvider) {
+    final provider = context.read<WeatherProvider>();
+    provider.searchLocation(query);
   }
 
-  void _searchLocation(String query) {
-    // Handle search query
-    // In a real app, this would trigger location search
-  }
-
-  void _setLocation(String location, AppConfig appConfig) {
-    appConfig.setWeatherLocation(location);
-    _loadWeather();
-  }
-
-  void _addToFavorites(String location, AppConfig appConfig) {
-    appConfig.addFavoriteLocation(location);
-  }
-
-  void _removeFromFavorites(String location, AppConfig appConfig) {
-    appConfig.removeFavoriteLocation(location);
+  void _removeFromFavorites(String location, WeatherProvider weatherProvider) {
+    weatherProvider.removeFavoriteLocation(location);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppConfig>(
-      builder: (context, appConfig, child) {
-        return Container(
-          width: 300,
-          height: 400,
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.orange, width: 2),
-          ),
-          child: Column(
-            children: [
-              // Header
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.2),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(18),
-                    topRight: Radius.circular(18),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.wb_sunny, color: Colors.orange, size: 32),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Weather',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            appConfig.weatherLocation,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 14,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+    return Consumer<WeatherProvider>(
+      builder: (context, weatherProvider, child) {
+        return Consumer<WeatherProvider>(
+          builder: (context, weatherProvider, child) {
+            return Container(
+              width: 300,
+              height: 400,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.95),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.orange, width: 2),
+              ),
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(18),
+                        topRight: Radius.circular(18),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => _showLocationSearch(context, appConfig),
-                      icon: const Icon(Icons.location_on, color: Colors.orange, size: 24),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.wb_sunny, color: Colors.orange, size: 32),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Weather',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                weatherProvider.locationName,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => _showLocationSearch(context, weatherProvider),
+                          icon: const Icon(Icons.location_on, color: Colors.orange, size: 24),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  // Tab Bar
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      children: [
+                        _buildTabButton('Current', 0),
+                        const SizedBox(width: 8),
+                        _buildTabButton('Forecast', 1),
+                        const SizedBox(width: 8),
+                        _buildTabButton('Alerts', 2),
+                      ],
+                    ),
+                  ),
+
+                  // Content based on selected tab
+                  Expanded(
+                    child: _buildTabContent(weatherProvider),
+                  ),
+                ],
               ),
-          
-          // Tab Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                _buildTabButton('Current', 0),
-                const SizedBox(width: 8),
-                _buildTabButton('Forecast', 1),
-                const SizedBox(width: 8),
-                _buildTabButton('Alerts', 2),
-              ],
-            ),
-          ),
-          
-          // Content based on selected tab
-          Expanded(
-            child: _buildTabContent(),
-          ),
-        ],
-      ),
+            );
+          },
         );
       },
     );
@@ -192,32 +144,78 @@ class _WeatherAppState extends State<WeatherApp> {
     );
   }
 
-  Widget _buildTabContent() {
+  Widget _buildTabContent(WeatherProvider provider) {
     switch (_currentTabIndex) {
       case 0:
-        return _buildCurrentTab();
+        return _buildCurrentTab(provider);
       case 1:
-        return _buildForecastTab();
+        return _buildForecastTab(provider);
       case 2:
-        return _buildAlertsTab();
+        return _buildAlertsTab(provider);
       default:
-        return _buildCurrentTab();
+        return _buildCurrentTab(provider);
     }
   }
 
-  Widget _buildCurrentTab() {
-    if (_isLoading) {
+  Widget _buildCurrentTab(WeatherProvider provider) {
+    if (provider.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Colors.orange),
       );
     }
 
-    return Padding(
+    if (provider.error.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Flexible(
+              child: Text(
+                provider.error,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: provider.fetchWeather,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (provider.currentWeather == null) {
+      return const Center(
+        child: Text(
+          'No weather data',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
+    final current = provider.currentWeather!;
+    final weatherList = current['weather'] as List<dynamic>? ?? [];
+    final weatherMain = weatherList.isNotEmpty ? weatherList.first : {};
+    final iconCode = weatherMain['icon'] ?? '01d';
+    final temp = current['temp']?.toDouble() ?? 0.0;
+    final feelsLike = current['feels_like']?.toDouble() ?? 0.0;
+    final humidity = current['humidity'] ?? 0;
+    final windSpeed = current['wind_speed']?.toDouble() ?? 0.0;
+    final uvi = current['uvi']?.toDouble() ?? 0.0;
+    final visibility = (current['visibility'] ?? 0) / 1609.34;
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
           // Current Weather
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
@@ -227,12 +225,12 @@ class _WeatherAppState extends State<WeatherApp> {
             child: Column(
               children: [
                 Text(
-                  _currentWeather!.icon,
+                  provider.getWeatherIcon(iconCode),
                   style: const TextStyle(fontSize: 48),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '${_currentWeather!.temperature}°F',
+                  '${temp.round()}°F',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 36,
@@ -240,14 +238,14 @@ class _WeatherAppState extends State<WeatherApp> {
                   ),
                 ),
                 Text(
-                  _currentWeather!.condition,
+                  provider.getCondition(iconCode),
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 18,
                   ),
                 ),
                 Text(
-                  'Feels like ${_currentWeather!.feelsLike}°F',
+                  'Feels like ${feelsLike.round()}°F',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.7),
                     fontSize: 14,
@@ -256,30 +254,36 @@ class _WeatherAppState extends State<WeatherApp> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Weather Details Grid
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.5,
-              children: [
-                _buildWeatherDetailCard('Humidity', '${_currentWeather!.humidity}%', Icons.water_drop, Colors.blue),
-                _buildWeatherDetailCard('Wind', '${_currentWeather!.windSpeed} mph', Icons.air, Colors.green),
-                _buildWeatherDetailCard('UV Index', '${_currentWeather!.uvIndex}', Icons.wb_sunny, Colors.orange),
-                _buildWeatherDetailCard('Visibility', '${_currentWeather!.visibility} mi', Icons.visibility, Colors.purple),
-              ],
-            ),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(child: _buildWeatherDetailCard('Humidity', '$humidity%', Icons.water_drop, Colors.blue)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildWeatherDetailCard('Wind', '${windSpeed.toStringAsFixed(1)} mph', Icons.air, Colors.green)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(child: _buildWeatherDetailCard('UV Index', '$uvi', Icons.wb_sunny, Colors.orange)),
+                  const SizedBox(width: 12),
+                  Expanded(child: _buildWeatherDetailCard('Visibility', '${visibility.toStringAsFixed(1)} mi', Icons.visibility, Colors.purple)),
+                ],
+              ),
+            ],
           ),
-          
+
           // Refresh Button
           Container(
-            padding: const EdgeInsets.all(20),
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 12),
             child: ElevatedButton.icon(
-              onPressed: _loadWeather,
+              onPressed: provider.fetchWeather,
               icon: const Icon(Icons.refresh, color: Colors.white),
               label: const Text('Refresh'),
               style: ElevatedButton.styleFrom(
@@ -293,18 +297,36 @@ class _WeatherAppState extends State<WeatherApp> {
     );
   }
 
-  Widget _buildForecastTab() {
-    if (_isLoading) {
+  Widget _buildForecastTab(WeatherProvider provider) {
+    if (provider.isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Colors.orange),
       );
     }
 
+    if (provider.forecast.isEmpty) {
+      return const Center(
+        child: Text(
+          'No forecast data',
+          style: TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: _forecast.length,
+      itemCount: provider.forecast.length > 5 ? 5 : provider.forecast.length,
       itemBuilder: (context, index) {
-        final day = _forecast[index];
+        final day = provider.forecast[index];
+        final temp = day['temp'] as Map<String, dynamic>? ?? {};
+        final dayTemp = temp['day']?.toDouble() ?? 0.0;
+        final feelsLike = temp['feels_like']?.toDouble() ?? 0.0;
+        final humidity = day['humidity'] ?? 0;
+        final windSpeed = day['wind_speed']?.toDouble() ?? 0.0;
+        final weatherList = day['weather'] as List<dynamic>? ?? [];
+        final weatherMain = weatherList.isNotEmpty ? weatherList.first : {};
+        final iconCode = weatherMain['icon'] ?? '01d';
+
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(16),
@@ -316,7 +338,7 @@ class _WeatherAppState extends State<WeatherApp> {
           child: Row(
             children: [
               Text(
-                day.icon,
+                provider.getWeatherIcon(iconCode),
                 style: const TextStyle(fontSize: 32),
               ),
               const SizedBox(width: 16),
@@ -325,7 +347,7 @@ class _WeatherAppState extends State<WeatherApp> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _getDayName(index),
+                      provider.getDayName(index),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -335,7 +357,7 @@ class _WeatherAppState extends State<WeatherApp> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      day.condition,
+                      provider.getCondition(iconCode),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 12,
@@ -344,7 +366,7 @@ class _WeatherAppState extends State<WeatherApp> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      'Humidity: ${day.humidity}% • Wind: ${day.windSpeed} mph',
+                      'Humidity: $humidity% • Wind: ${windSpeed.toStringAsFixed(1)} mph',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.6),
                         fontSize: 11,
@@ -359,7 +381,7 @@ class _WeatherAppState extends State<WeatherApp> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${day.temperature}°F',
+                    '${dayTemp.round()}°F',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -367,7 +389,7 @@ class _WeatherAppState extends State<WeatherApp> {
                     ),
                   ),
                   Text(
-                    'Feels like ${day.feelsLike}°F',
+                    'Feels like ${feelsLike.round()}°F',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 12,
@@ -382,8 +404,8 @@ class _WeatherAppState extends State<WeatherApp> {
     );
   }
 
-  Widget _buildAlertsTab() {
-    if (_alerts.isEmpty) {
+  Widget _buildAlertsTab(WeatherProvider provider) {
+    if (provider.alerts.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -399,10 +421,10 @@ class _WeatherAppState extends State<WeatherApp> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'All clear! No severe weather expected.',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white70,
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,
@@ -414,16 +436,19 @@ class _WeatherAppState extends State<WeatherApp> {
 
     return ListView.builder(
       padding: const EdgeInsets.all(20),
-      itemCount: _alerts.length,
+      itemCount: provider.alerts.length,
       itemBuilder: (context, index) {
-        final alert = _alerts[index];
+        final alert = provider.alerts[index];
+        final severity = alert['severity'] ?? 'Unknown';
+        final color = _getAlertColor(severity);
+
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: alert.color.withOpacity(0.2),
+            color: color.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: alert.color),
+            border: Border.all(color: color),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,15 +457,15 @@ class _WeatherAppState extends State<WeatherApp> {
                 children: [
                   Icon(
                     Icons.warning,
-                    color: alert.color,
+                    color: color,
                     size: 24,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      alert.title,
+                      alert['event'] ?? 'Weather Alert',
                       style: TextStyle(
-                        color: alert.color,
+                        color: color,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -449,11 +474,11 @@ class _WeatherAppState extends State<WeatherApp> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: alert.color,
+                      color: color,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      alert.severity,
+                      severity,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -465,7 +490,7 @@ class _WeatherAppState extends State<WeatherApp> {
               ),
               const SizedBox(height: 8),
               Text(
-                alert.description,
+                alert['description'] ?? '',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -473,7 +498,7 @@ class _WeatherAppState extends State<WeatherApp> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Expected: ${_formatAlertTime(alert.expectedTime)}',
+                'Expected: ${_formatAlertTime(alert)}',
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.7),
                   fontSize: 12,
@@ -488,22 +513,23 @@ class _WeatherAppState extends State<WeatherApp> {
 
   Widget _buildWeatherDetailCard(String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          Icon(icon, color: color, size: 16),
+          const SizedBox(height: 2),
           Text(
             value,
             style: TextStyle(
               color: color,
-              fontSize: 18,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -511,34 +537,31 @@ class _WeatherAppState extends State<WeatherApp> {
             title,
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
-              fontSize: 12,
+              fontSize: 10,
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  String _getDayName(int index) {
-    final days = ['Today', 'Tomorrow', 'Wednesday', 'Thursday', 'Friday'];
-    return days[index];
-  }
-
-  String _formatAlertTime(DateTime time) {
-    final now = DateTime.now();
-    final difference = time.difference(now);
-    
-    if (difference.inHours < 1) {
-      return 'Within the hour';
-    } else if (difference.inHours < 24) {
-      return 'In ${difference.inHours} hours';
-    } else {
-      return 'In ${difference.inDays} days';
+  Color _getAlertColor(String severity) {
+    switch (severity.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      case 'low':
+        return Colors.yellow;
+      default:
+        return Colors.blue;
     }
   }
 
-  void _showLocationSearch(BuildContext context, AppConfig appConfig) {
+  void _showLocationSearch(BuildContext context, WeatherProvider weatherProvider) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -580,7 +603,7 @@ class _WeatherAppState extends State<WeatherApp> {
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: TextField(
-                  onChanged: _searchLocation,
+                  onSubmitted: (query) => _searchLocation(query, weatherProvider),
                   decoration: InputDecoration(
                     hintText: 'Enter city name...',
                     hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
@@ -600,35 +623,42 @@ class _WeatherAppState extends State<WeatherApp> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: appConfig.favoriteLocations.length,
-                  itemBuilder: (context, index) {
-                    final location = appConfig.favoriteLocations[index];
-                    final isCurrent = location == appConfig.weatherLocation;
-                    return ListTile(
-                      leading: Icon(
-                        isCurrent ? Icons.my_location : Icons.location_on,
-                        color: isCurrent ? Colors.orange : Colors.white70,
-                      ),
-                      title: Text(
-                        location,
-                        style: TextStyle(
-                          color: isCurrent ? Colors.orange : Colors.white,
-                          fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: isCurrent
-                          ? const Icon(Icons.check, color: Colors.orange)
-                          : IconButton(
-                              icon: const Icon(Icons.favorite, color: Colors.red),
-                              onPressed: () => _removeFromFavorites(location, appConfig),
+                child: Consumer<WeatherProvider>(
+                  builder: (context, weatherProvider, child) {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: weatherProvider.favoriteLocations.length,
+                      itemBuilder: (context, index) {
+                        final location = weatherProvider.favoriteLocations[index];
+                        final isCurrent = location == weatherProvider.weatherLocation;
+                        return ListTileTheme(
+                          style: ListTileStyle.drawer,
+                          child: ListTile(
+                            leading: Icon(
+                              isCurrent ? Icons.my_location : Icons.location_on,
+                              color: isCurrent ? Colors.orange : Colors.white70,
                             ),
-                      onTap: () {
-                        _setLocation(location, appConfig);
-                        Navigator.of(context).pop();
+                            title: Text(
+                              location,
+                              style: TextStyle(
+                                color: isCurrent ? Colors.orange : Colors.white,
+                                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: isCurrent
+                                ? Icon(Icons.check, color: Colors.orange)
+                                : IconButton(
+                                    icon: const Icon(Icons.favorite, color: Colors.red),
+                                    onPressed: () => _removeFromFavorites(location, weatherProvider),
+                                  ),
+                            onTap: () {
+                              _searchLocation(location, weatherProvider);
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        );
                       },
                     );
                   },
@@ -642,36 +672,25 @@ class _WeatherAppState extends State<WeatherApp> {
   }
 }
 
-class MockWeather {
-  final int temperature;
-  final String condition;
-  final int humidity;
-  final int windSpeed;
-  final String icon;
-  final int feelsLike;
-  final int uvIndex;
-  final int visibility;
-  final int pressure;
+String _formatAlertTime(Map<String, dynamic> alert) {
+  final now = DateTime.now();
+  DateTime? startTime;
 
-  MockWeather({
-    required this.temperature,
-    required this.condition,
-    required this.humidity,
-    required this.windSpeed,
-    required this.icon,
-    required this.feelsLike,
-    required this.uvIndex,
-    required this.visibility,
-    required this.pressure,
-  });
+  if (alert['start'] != null) {
+    startTime = DateTime.fromMillisecondsSinceEpoch(alert['start'] * 1000);
+  } else if (alert['ends'] != null) {
+    startTime = DateTime.fromMillisecondsSinceEpoch(alert['ends'] * 1000);
+  }
+
+  if (startTime == null) return 'Unknown time';
+
+  final difference = startTime.difference(now);
+
+  if (difference.inHours < 1) {
+    return 'Within the hour';
+  } else if (difference.inHours < 24) {
+    return 'In ${difference.inHours} hours';
+  } else {
+    return 'In ${difference.inDays} days';
+  }
 }
-
-class WeatherAlert {
-  final String title;
-  final String description;
-  final String severity;
-  final Color color;
-  final DateTime expectedTime;
-
-  WeatherAlert(this.title, this.description, this.severity, this.color, this.expectedTime);
-} 

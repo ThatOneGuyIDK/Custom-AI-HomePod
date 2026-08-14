@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+import 'package:homepod_assistant/providers/weather_provider.dart';
 
-class WeatherWidget extends StatefulWidget {
+class WeatherWidget extends StatelessWidget {
   final double size;
   final Color? accentColor;
   
@@ -12,282 +13,168 @@ class WeatherWidget extends StatefulWidget {
   });
 
   @override
-  State<WeatherWidget> createState() => _WeatherWidgetState();
-}
-
-class _WeatherWidgetState extends State<WeatherWidget>
-    with TickerProviderStateMixin {
-  MockWeather? _currentWeather;
-  List<MockWeather> _forecast = [];
-  bool _isLoading = true;
-  String _error = '';
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _loadWeather();
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadWeather() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = '';
-      });
-
-      // Mock weather data for testing
-      await Future.delayed(const Duration(seconds: 1));
-      
-      setState(() {
-        _currentWeather = MockWeather(
-          temperature: 22.5,
-          condition: 'Partly Cloudy',
-          humidity: 65,
-          windSpeed: 12.0,
-          icon: 'partly-cloudy-day',
-        );
-        
-        _forecast = [
-          MockWeather(
-            temperature: 24.0,
-            condition: 'Sunny',
-            humidity: 60,
-            windSpeed: 8.0,
-            icon: 'clear-day',
-            date: DateTime.now().add(const Duration(days: 1)),
-          ),
-          MockWeather(
-            temperature: 20.0,
-            condition: 'Rainy',
-            humidity: 80,
-            windSpeed: 15.0,
-            icon: 'rain',
-            date: DateTime.now().add(const Duration(days: 2)),
-          ),
-        ];
-        
-        _isLoading = false;
-      });
-      
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<Position> _getCurrentPosition() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied');
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
-  String _getWeatherIcon(String condition) {
-    // Map weather conditions to emojis for mock data
-    switch (condition.toLowerCase()) {
-      case 'sunny':
-      case 'clear-day':
-        return '☀️';
-      case 'partly cloudy':
-      case 'partly-cloudy-day':
-        return '⛅';
-      case 'cloudy':
-        return '☁️';
-      case 'rainy':
-      case 'rain':
-        return '🌧️';
-      case 'snowy':
-      case 'snow':
-        return '❄️';
-      case 'stormy':
-      case 'thunderstorm':
-        return '⛈️';
-      case 'foggy':
-      case 'fog':
-        return '🌫️';
-      default:
-        return '🌤️';
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return _buildLoadingWidget();
-    }
+    return Consumer<WeatherProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return _buildLoadingWidget(provider, size, accentColor);
+        }
 
-    if (_error.isNotEmpty) {
-      return _buildErrorWidget();
-    }
+        if (provider.error.isNotEmpty) {
+          return _buildErrorWidget(provider, size, accentColor);
+        }
 
-    if (_currentWeather == null) {
-      return _buildNoDataWidget();
-    }
+        if (provider.currentWeather == null) {
+          return _buildNoDataWidget(provider, size, accentColor);
+        }
 
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: _buildWeatherDisplay(),
+        return _buildWeatherDisplay(provider, size, accentColor);
+      },
     );
   }
 
-  Widget _buildLoadingWidget() {
+  Widget _buildLoadingWidget(WeatherProvider provider, double size, Color? accentColor) {
+    final color = accentColor ?? Colors.orange;
     return Container(
-      width: widget.size,
-      height: widget.size,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white.withValues(alpha: 0.1),
         border: Border.all(
-          color: (widget.accentColor ?? Colors.blue).withValues(alpha: 0.3),
+          color: color.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
       child: Center(
         child: CircularProgressIndicator(
-          color: widget.accentColor ?? Colors.blue,
+          color: color,
           strokeWidth: 3,
         ),
       ),
     );
   }
 
-  Widget _buildErrorWidget() {
-    return Container(
-      width: widget.size,
-      height: widget.size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.red.withValues(alpha: 0.1),
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.3),
-          width: 2,
+  Widget _buildErrorWidget(WeatherProvider provider, double size, Color? accentColor) {
+    return GestureDetector(
+      onTap: provider.fetchWeather,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.red.withValues(alpha: 0.1),
+          border: Border.all(
+            color: Colors.red.withValues(alpha: 0.3),
+            width: 2,
+          ),
         ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              color: Colors.red,
-              size: widget.size * 0.2,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Weather Error',
-              style: TextStyle(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
                 color: Colors.red,
-                fontSize: widget.size * 0.08,
-                fontWeight: FontWeight.bold,
+                size: size * 0.2,
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Tap to retry',
-              style: TextStyle(
-                color: Colors.red.withValues(alpha: 0.7),
-                fontSize: widget.size * 0.06,
+              SizedBox(height: 8),
+              Text(
+                'Weather Error',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: size * 0.08,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 4),
+              Text(
+                'Tap to retry',
+                style: TextStyle(
+                  color: Colors.red.withValues(alpha: 0.7),
+                  fontSize: size * 0.06,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNoDataWidget() {
-    return Container(
-      width: widget.size,
-      height: widget.size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.grey.withValues(alpha: 0.1),
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.3),
-          width: 2,
+  Widget _buildNoDataWidget(WeatherProvider provider, double size, Color? accentColor) {
+    return GestureDetector(
+      onTap: provider.fetchWeather,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.grey.withValues(alpha: 0.1),
+          border: Border.all(
+            color: Colors.grey.withValues(alpha: 0.3),
+            width: 2,
+          ),
         ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.cloud_off,
-              color: Colors.grey,
-              size: widget.size * 0.2,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'No Weather Data',
-              style: TextStyle(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.cloud_off,
                 color: Colors.grey,
-                fontSize: widget.size * 0.08,
-                fontWeight: FontWeight.bold,
+                size: size * 0.2,
               ),
-            ),
-          ],
+              SizedBox(height: 8),
+              Text(
+                'No Weather Data',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: size * 0.08,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Tap to load',
+                style: TextStyle(
+                  color: Colors.grey.withValues(alpha: 0.7),
+                  fontSize: size * 0.06,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildWeatherDisplay() {
-    final weather = _currentWeather!;
-    final accentColor = widget.accentColor ?? Colors.blue;
+  Widget _buildWeatherDisplay(WeatherProvider provider, double size, Color? accentColor) {
+    final current = provider.currentWeather!;
+    final weatherList = current['weather'] as List<dynamic>? ?? [];
+    final weatherMain = weatherList.isNotEmpty ? weatherList.first : {};
+    final iconCode = weatherMain['icon'] ?? '01d';
+    final condition = weatherMain['main'] ?? 'Unknown';
+    final temp = current['temp']?.toDouble() ?? 0.0;
+    final color = accentColor ?? Colors.orange;
     
     return GestureDetector(
-      onTap: _loadWeather,
+      onTap: provider.fetchWeather,
       child: Container(
-        width: widget.size,
-        height: widget.size,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              accentColor.withValues(alpha: 0.2),
-              accentColor.withValues(alpha: 0.1),
+              color.withValues(alpha: 0.2),
+              color.withValues(alpha: 0.1),
               Colors.transparent,
             ],
             stops: const [0.0, 0.7, 1.0],
           ),
           border: Border.all(
-            color: accentColor.withValues(alpha: 0.4),
+            color: color.withValues(alpha: 0.4),
             width: 2,
           ),
         ),
@@ -295,27 +182,27 @@ class _WeatherWidgetState extends State<WeatherWidget>
           children: [
             // Background weather icon
             Positioned(
-              top: widget.size * 0.1,
-              left: widget.size * 0.1,
-              right: widget.size * 0.1,
+              top: size * 0.1,
+              left: size * 0.1,
+              right: size * 0.1,
               child: Center(
                 child: Text(
-                  _getWeatherIcon(weather.condition),
-                  style: TextStyle(fontSize: widget.size * 0.3),
+                  provider.getWeatherIcon(iconCode),
+                  style: TextStyle(fontSize: size * 0.3),
                 ),
               ),
             ),
             
             // Temperature display
             Positioned(
-              bottom: widget.size * 0.25,
+              bottom: size * 0.25,
               left: 0,
               right: 0,
               child: Center(
                 child: Text(
-                  '${weather.temperature.round()}°C',
+                  '${temp.round()}°F',
                   style: TextStyle(
-                    fontSize: widget.size * 0.15,
+                    fontSize: size * 0.15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -325,52 +212,56 @@ class _WeatherWidgetState extends State<WeatherWidget>
             
             // Location name
             Positioned(
-              bottom: widget.size * 0.1,
+              bottom: size * 0.1,
               left: 0,
               right: 0,
               child: Center(
                 child: Text(
-                  'Current Location',
+                  provider.locationName,
                   style: TextStyle(
-                    fontSize: widget.size * 0.08,
+                    fontSize: size * 0.08,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
             
             // Weather description
             Positioned(
-              top: widget.size * 0.45,
+              top: size * 0.45,
               left: 0,
               right: 0,
               child: Center(
                 child: Text(
-                  weather.condition,
+                  condition,
                   style: TextStyle(
-                    fontSize: widget.size * 0.08,
+                    fontSize: size * 0.08,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
             
             // Refresh indicator
             Positioned(
-              top: widget.size * 0.05,
-              right: widget.size * 0.05,
+              top: size * 0.05,
+              right: size * 0.05,
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.refresh,
-                  color: accentColor,
-                  size: widget.size * 0.08,
+                  color: color,
+                  size: size * 0.08,
                 ),
               ),
             ),
@@ -379,22 +270,4 @@ class _WeatherWidgetState extends State<WeatherWidget>
       ),
     );
   }
-} 
-
-class MockWeather {
-  final double temperature;
-  final String condition;
-  final int humidity;
-  final double windSpeed;
-  final String icon;
-  final DateTime? date;
-
-  MockWeather({
-    required this.temperature,
-    required this.condition,
-    required this.humidity,
-    required this.windSpeed,
-    required this.icon,
-    this.date,
-  });
-} 
+}

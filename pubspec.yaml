@@ -14,7 +14,7 @@ dependencies:
   # State Management
   provider: ^6.1.1
 
-  # HTTP and Networking
+# HTTP and Networking
   http: ^1.1.0
   js: ^0.6.7
 

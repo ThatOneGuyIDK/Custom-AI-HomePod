@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:homepod_assistant/providers/assistant_state.dart';
-import 'package:homepod_assistant/providers/app_config.dart';
+import 'package:homepod_assistant/providers/weather_provider.dart';
 import 'package:homepod_assistant/screens/home_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Set preferred orientations for the round display
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -21,7 +21,7 @@ void main() {
       systemNavigationBarColor: Colors.transparent,
     ),
   );
-  
+
   runApp(const HomePodApp());
 }
 
@@ -33,7 +33,7 @@ class HomePodApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AssistantState()),
-        ChangeNotifierProvider(create: (_) => AppConfig()),
+        ChangeNotifierProvider(create: (_) => WeatherProvider()),
       ],
       child: MaterialApp(
         title: 'HomePod Assistant',

@@ -112,8 +112,6 @@ class VoiceAssistantService {
             // Set up transcription listener
             _webSpeechService.transcriptionStream.listen((transcript) {
               _debugLog("🎤 Transcribed: $transcript");
-              _lastTranscription = transcript;
-              _processTranscription(transcript);
             });
             
             // Set up error listener

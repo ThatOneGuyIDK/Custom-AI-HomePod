@@ -74,20 +74,27 @@ sudo mosquitto_passwd -c /etc/mosquitto/passwd your_username
 ```
 
 ### 4. 📰 News Widget
-**Features**: Headlines, calendar events, rotating content, swipe navigation
-**Setup Required**: News API key (optional, uses sample data by default)
+**Features**: Global headlines, tech news, local Charlottesville/UVA news, rotating content, category filtering
+**Setup Required**: GNews API key (free tier: 100 requests/day, sufficient for home display)
 
 **Configuration**:
 ```dart
-// Add to lib/config/app_config.dart
-static const String newsApiKey = 'YOUR_NEWS_API_KEY';
+// In lib/config/app_config.dart
+static const String newsApiKey = 'your_gnews_api_key_here';
 ```
 
-**Get News API Key**:
-1. Visit [NewsAPI](https://newsapi.org/)
+**Get GNews API Key**:
+1. Visit [GNews API](https://gnews.io/)
 2. Sign up for free account
-3. Get API key
-4. Update config file
+3. Get API key from dashboard
+4. Add to `lib/config/app_config.dart`
+
+**News Sources**:
+- **Global**: US top headlines from GNews API
+- **Technology**: Tech category from GNews API
+- **Local**: RSS feeds from dailyprogress.com (Charlottesville) and UVA news
+
+**Caching**: News cached for 30 minutes to minimize API usage. Free tier allows ~8 fetches/day well within limits.
 
 ### 5. ⚙️ Settings Widget
 **Features**: API configuration, preferences, MQTT settings, app preferences
@@ -100,16 +107,20 @@ static const String newsApiKey = 'YOUR_NEWS_API_KEY';
 
 ## 🔧 Advanced Configuration
 
-### Environment Variables
-Create a `.env` file in the project root:
-```env
-WEATHER_API_KEY=your_weather_key
-SPOTIFY_CLIENT_ID=your_spotify_id
-SPOTIFY_CLIENT_SECRET=your_spotify_secret
-MQTT_BROKER=your_mqtt_broker
-MQTT_USERNAME=your_mqtt_username
-MQTT_PASSWORD=your_mqtt_password
+### API Key Configuration
+Copy `lib/config/app_config_example.dart` to `lib/config/app_config.dart` and fill in your real keys:
+```dart
+// In lib/config/app_config.dart
+static const String weatherApiKey = 'your_weather_key';
+static const String newsApiKey = 'your_gnews_key';
+static const String spotifyClientId = 'your_spotify_id';
+static const String spotifyClientSecret = 'your_spotify_secret';
+static const String mqttBroker = 'your_mqtt_broker';
+static const String mqttUsername = 'your_mqtt_username';
+static const String mqttPassword = 'your_mqtt_password';
 ```
+
+**Note:** The real `app_config.dart` is already in `.gitignore`. Never commit API keys to version control.
 
 ### Custom Widget Development
 Create new widgets by extending the base widget pattern:
@@ -274,11 +285,9 @@ Enable debug panel to see:
 ```bash
 # Backup settings
 cp lib/config/app_config.dart backup/
-cp .env backup/
 
 # Restore settings
 cp backup/app_config.dart lib/config/
-cp backup/.env ./
 ```
 
 ## 📚 Additional Resources
