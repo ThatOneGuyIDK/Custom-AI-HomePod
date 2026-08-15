@@ -1,81 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:homepod_assistant/providers/news_provider.dart';
+import 'package:intl/intl.dart';
 
-class NewsApp extends StatefulWidget {
+class NewsApp extends StatelessWidget {
   const NewsApp({super.key});
 
   @override
-  State<NewsApp> createState() => _NewsAppState();
+  Widget build(BuildContext context) {
+    return Consumer<NewsProvider>(
+      builder: (context, provider, _) {
+        return _NewsAppContent(provider: provider);
+      },
+    );
+  }
 }
 
-class _NewsAppState extends State<NewsApp> {
-  List<NewsArticle> _articles = [];
-  bool _isLoading = true;
-  String _selectedCategory = 'All';
+class _NewsAppContent extends StatefulWidget {
+  final NewsProvider provider;
 
-  final List<String> _categories = ['All', 'Technology', 'Science', 'Business', 'Entertainment'];
+  const _NewsAppContent({required this.provider});
 
   @override
-  void initState() {
-    super.initState();
-    _loadNews();
-  }
+  State<_NewsAppContent> createState() => _NewsAppContentState();
+}
 
-  Future<void> _loadNews() async {
-    // Simulate loading
-    await Future.delayed(const Duration(seconds: 1));
-    
-    setState(() {
-      _articles = [
-        NewsArticle(
-          title: 'New AI Breakthrough in Natural Language Processing',
-          summary: 'Researchers develop advanced language models that better understand context and nuance.',
-          category: 'Technology',
-          timeAgo: '2 hours ago',
-          imageUrl: '🤖',
-        ),
-        NewsArticle(
-          title: 'SpaceX Successfully Launches New Satellite Constellation',
-          summary: 'The company continues to expand its global internet coverage with latest launch.',
-          category: 'Science',
-          timeAgo: '4 hours ago',
-          imageUrl: '🚀',
-        ),
-        NewsArticle(
-          title: 'Major Tech Companies Announce Climate Initiative',
-          summary: 'Collaborative effort to reduce carbon footprint across the industry.',
-          category: 'Business',
-          timeAgo: '6 hours ago',
-          imageUrl: '🌱',
-        ),
-        NewsArticle(
-          title: 'New Streaming Service Launches with Exclusive Content',
-          summary: 'Competition heats up in the streaming entertainment market.',
-          category: 'Entertainment',
-          timeAgo: '8 hours ago',
-          imageUrl: '📺',
-        ),
-        NewsArticle(
-          title: 'Breakthrough in Quantum Computing Research',
-          summary: 'Scientists achieve new milestone in quantum supremacy.',
-          category: 'Science',
-          timeAgo: '12 hours ago',
-          imageUrl: '⚛️',
-        ),
-      ];
-      
-      _isLoading = false;
-    });
-  }
+class _NewsAppContentState extends State<_NewsAppContent> {
+  String _selectedCategory = 'All';
 
-  List<NewsArticle> get _filteredArticles {
-    if (_selectedCategory == 'All') {
-      return _articles;
-    }
-    return _articles.where((article) => article.category == _selectedCategory).toList();
-  }
+  final List<String> _categories = ['All', 'Global', 'Technology', 'Local'];
 
   @override
   Widget build(BuildContext context) {
+    final articles = widget.provider.getArticlesByCategory(_selectedCategory);
+
     return Container(
       width: 300,
       height: 400,
@@ -86,7 +44,6 @@ class _NewsAppState extends State<NewsApp> {
       ),
       child: Column(
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -111,46 +68,45 @@ class _NewsAppState extends State<NewsApp> {
               ],
             ),
           ),
-          
-          // Category Filter
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+
+          SizedBox(
             height: 40,
-            child: ListView.builder(
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = category == _selectedCategory;
-                
-                return Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(
-                      category,
-                      style: TextStyle(
-                        color: isSelected ? Colors.black : Colors.white,
-                        fontSize: 12,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: _categories.map((category) {
+                  final isSelected = category == _selectedCategory;
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(
+                        category,
+                        style: TextStyle(
+                          color: isSelected ? Colors.black : Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedCategory = category;
+                        });
+                      },
+                      backgroundColor: Colors.transparent,
+                      selectedColor: Colors.yellow,
+                      side: BorderSide(
+                        color: isSelected ? Colors.yellow : Colors.grey.withOpacity(0.5),
                       ),
                     ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
-                    },
-                    backgroundColor: Colors.transparent,
-                    selectedColor: Colors.yellow,
-                    side: BorderSide(
-                      color: isSelected ? Colors.yellow : Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                );
-              },
+                  );
+                }).toList(),
+              ),
             ),
           ),
-          
-          if (_isLoading)
+
+          if (widget.provider.isLoading)
             const Expanded(
               child: Center(
                 child: CircularProgressIndicator(
@@ -158,13 +114,63 @@ class _NewsAppState extends State<NewsApp> {
                 ),
               ),
             )
+          else if (widget.provider.error.isNotEmpty && articles.isEmpty)
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        widget.provider.error,
+                        style: TextStyle(
+                          color: Colors.red.withOpacity(0.8),
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (articles.isEmpty)
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.newspaper,
+                      color: Colors.grey,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No news available',
+                      style: TextStyle(
+                        color: Colors.grey.withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
           else
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: _filteredArticles.length,
+                itemCount: articles.length,
                 itemBuilder: (context, index) {
-                  final article = _filteredArticles[index];
+                  final article = articles[index] as Map<String, dynamic>;
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
@@ -179,7 +185,7 @@ class _NewsAppState extends State<NewsApp> {
                         Row(
                           children: [
                             Text(
-                              article.imageUrl,
+                              _getCategoryIcon(_getArticleCategory(article)),
                               style: const TextStyle(fontSize: 24),
                             ),
                             const SizedBox(width: 12),
@@ -188,7 +194,7 @@ class _NewsAppState extends State<NewsApp> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    article.title,
+                                    article['title']?.toString() ?? '',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -199,7 +205,7 @@ class _NewsAppState extends State<NewsApp> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    article.category,
+                                    article['source']?.toString() ?? 'Unknown',
                                     style: const TextStyle(
                                       color: Colors.yellow,
                                       fontSize: 12,
@@ -213,7 +219,7 @@ class _NewsAppState extends State<NewsApp> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          article.summary,
+                          article['summary']?.toString() ?? '',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.8),
                             fontSize: 14,
@@ -223,7 +229,7 @@ class _NewsAppState extends State<NewsApp> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          article.timeAgo,
+                          _formatTimeAgo(article['publishedAt']?.toString() ?? ''),
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                             fontSize: 12,
@@ -235,16 +241,12 @@ class _NewsAppState extends State<NewsApp> {
                 },
               ),
             ),
-          
-          // Refresh Button
+
           Container(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton.icon(
               onPressed: () {
-                setState(() {
-                  _isLoading = true;
-                });
-                _loadNews();
+                widget.provider.fetchAllNews(force: true);
               },
               icon: const Icon(Icons.refresh, color: Colors.white),
               label: const Text('Refresh'),
@@ -258,20 +260,39 @@ class _NewsAppState extends State<NewsApp> {
       ),
     );
   }
+
+  String _getArticleCategory(Map<String, dynamic> article) {
+    final source = (article['source']?.toString() ?? '').toLowerCase();
+    if (source.contains('daily progress')) return 'Local';
+    return 'Global';
+  }
+
+  String _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Local':
+        return '📍';
+      case 'Technology':
+        return '💻';
+      default:
+        return '🌍';
+    }
+  }
+
+  String _formatTimeAgo(String publishedAt) {
+    if (publishedAt.isEmpty) return '';
+    try {
+      final date = DateTime.tryParse(publishedAt);
+      if (date == null) return publishedAt;
+      final difference = DateTime.now().difference(date);
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}m ago';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}h ago';
+      } else {
+        return DateFormat('MMM d').format(date);
+      }
+    } catch (e) {
+      return publishedAt;
+    }
+  }
 }
-
-class NewsArticle {
-  final String title;
-  final String summary;
-  final String category;
-  final String timeAgo;
-  final String imageUrl;
-
-  NewsArticle({
-    required this.title,
-    required this.summary,
-    required this.category,
-    required this.timeAgo,
-    required this.imageUrl,
-  });
-} 

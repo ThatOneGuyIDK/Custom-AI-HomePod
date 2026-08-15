@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:homepod_assistant/providers/news_provider.dart';
 import 'package:intl/intl.dart';
 
 class NewsWidget extends StatefulWidget {
   final double size;
   final Color? accentColor;
-  
+
   const NewsWidget({
     super.key,
     this.size = 200,
@@ -17,12 +19,9 @@ class NewsWidget extends StatefulWidget {
 
 class _NewsWidgetState extends State<NewsWidget>
     with TickerProviderStateMixin {
-  List<NewsItem> _newsItems = [];
   List<CalendarEvent> _calendarEvents = [];
-  bool _isLoading = true;
-  String _error = '';
   int _currentIndex = 0;
-  
+
   late AnimationController _slideController;
   late Animation<Offset> _slideAnimation;
   late AnimationController _fadeController;
@@ -42,7 +41,7 @@ class _NewsWidgetState extends State<NewsWidget>
       parent: _slideController,
       curve: Curves.easeInOut,
     ));
-    
+
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -54,8 +53,8 @@ class _NewsWidgetState extends State<NewsWidget>
       parent: _fadeController,
       curve: Curves.easeInOut,
     ));
-    
-    _loadData();
+
+    _loadSampleCalendar();
     _startAutoRotation();
   }
 
@@ -76,116 +75,52 @@ class _NewsWidgetState extends State<NewsWidget>
   }
 
   void _nextItem() {
-    if (_newsItems.isEmpty && _calendarEvents.isEmpty) return;
-    
+    if (_allItems.isEmpty) return;
+
     setState(() {
-      _currentIndex = (_currentIndex + 1) % (_newsItems.length + _calendarEvents.length);
+      _currentIndex = (_currentIndex + 1) % _allItems.length;
     });
-    
+
     _slideController.forward(from: 0.0);
     _fadeController.forward(from: 0.0);
   }
 
   void _previousItem() {
-    if (_newsItems.isEmpty && _calendarEvents.isEmpty) return;
-    
+    if (_allItems.isEmpty) return;
+
     setState(() {
-      _currentIndex = _currentIndex == 0 
-          ? (_newsItems.length + _calendarEvents.length - 1)
+      _currentIndex = _currentIndex == 0
+          ? (_allItems.length - 1)
           : _currentIndex - 1;
     });
-    
+
     _slideController.forward(from: 0.0);
     _fadeController.forward(from: 0.0);
   }
 
-  Future<void> _loadData() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = '';
-      });
-
-      // Load sample news data (replace with actual API calls)
-      await _loadSampleNews();
-      await _loadSampleCalendar();
-      
-      setState(() {
-        _isLoading = false;
-      });
-      
-      _fadeController.forward();
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
+  List<Map<String, dynamic>> _getNewsArticles(NewsProvider provider) {
+    final allNews = [...provider.globalNews, ...provider.techNews, ...provider.localNews];
+    return allNews.cast<Map<String, dynamic>>();
   }
 
-  Future<void> _loadSampleNews() async {
-    // Sample news data - replace with actual news API
-    _newsItems = [
-      NewsItem(
-        title: 'Tech Innovation Breakthrough',
-        summary: 'New AI technology shows promising results',
-        category: 'Technology',
-        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      NewsItem(
-        title: 'Weather Alert: Storm Approaching',
-        summary: 'Heavy rain expected this evening',
-        category: 'Weather',
-        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-      ),
-      NewsItem(
-        title: 'Local Community Event',
-        summary: 'Annual festival this weekend',
-        category: 'Local',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
-      ),
-    ];
+  List<dynamic> get _allItems {
+    if (!mounted) return [];
+    return [..._newsArticles, ..._calendarEvents];
   }
 
-  Future<void> _loadSampleCalendar() async {
-    // Sample calendar data - replace with actual calendar API
-    _calendarEvents = [
-      CalendarEvent(
-        title: 'Team Meeting',
-        time: DateTime.now().add(const Duration(hours: 1)),
-        location: 'Conference Room A',
-        isAllDay: false,
-      ),
-      CalendarEvent(
-        title: 'Dentist Appointment',
-        time: DateTime.now().add(const Duration(days: 1, hours: 10)),
-        location: 'Dr. Smith Office',
-        isAllDay: false,
-      ),
-      CalendarEvent(
-        title: 'Weekend Trip',
-        time: DateTime.now().add(const Duration(days: 2)),
-        location: 'Mountain Resort',
-        isAllDay: true,
-      ),
-    ];
-  }
-
-  Widget _getCurrentItem() {
-    final totalItems = _newsItems.length + _calendarEvents.length;
-    if (totalItems == 0) return const SizedBox.shrink();
-    
-    if (_currentIndex < _newsItems.length) {
-      return _buildNewsItem(_newsItems[_currentIndex]);
-    } else {
-      final calendarIndex = _currentIndex - _newsItems.length;
-      return _buildCalendarEvent(_calendarEvents[calendarIndex]);
-    }
+  List<Map<String, dynamic>> get _newsArticles {
+    if (!mounted) return [];
+    return _getNewsArticles(context.read<NewsProvider>());
   }
 
   String _getCurrentCategory() {
-    if (_currentIndex < _newsItems.length) {
-      return _newsItems[_currentIndex].category;
+    if (_newsArticles.isEmpty && _calendarEvents.isEmpty) return 'News';
+
+    if (_currentIndex < _newsArticles.length) {
+      final article = _newsArticles[_currentIndex];
+      final source = (article['source']?.toString() ?? '').toLowerCase();
+      if (source.contains('daily progress')) return 'Local';
+      return 'News';
     } else {
       return 'Calendar';
     }
@@ -193,19 +128,23 @@ class _NewsWidgetState extends State<NewsWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return _buildLoadingWidget();
-    }
+    return Consumer<NewsProvider>(
+      builder: (context, provider, _) {
+        if (provider.isLoading && !provider.hasCachedData) {
+          return _buildLoadingWidget();
+        }
 
-    if (_error.isNotEmpty) {
-      return _buildErrorWidget();
-    }
+        if (provider.error.isNotEmpty && _allItems.isEmpty) {
+          return _buildErrorWidget();
+        }
 
-    if (_newsItems.isEmpty && _calendarEvents.isEmpty) {
-      return _buildNoDataWidget();
-    }
+        if (_allItems.isEmpty) {
+          return _buildNoDataWidget();
+        }
 
-    return _buildNewsDisplay();
+        return _buildNewsDisplay(provider);
+      },
+    );
   }
 
   Widget _buildLoadingWidget() {
@@ -317,10 +256,10 @@ class _NewsWidgetState extends State<NewsWidget>
     );
   }
 
-  Widget _buildNewsDisplay() {
+  Widget _buildNewsDisplay(NewsProvider provider) {
     final accentColor = widget.accentColor ?? Colors.orange;
-    final totalItems = _newsItems.length + _calendarEvents.length;
-    
+    final totalItems = _allItems.length;
+
     return Container(
       width: widget.size,
       height: widget.size,
@@ -341,7 +280,6 @@ class _NewsWidgetState extends State<NewsWidget>
       ),
       child: Stack(
         children: [
-          // Navigation arrows
           Positioned(
             top: widget.size * 0.4,
             left: widget.size * 0.05,
@@ -362,7 +300,7 @@ class _NewsWidgetState extends State<NewsWidget>
               ),
             ),
           ),
-          
+
           Positioned(
             top: widget.size * 0.4,
             right: widget.size * 0.05,
@@ -383,8 +321,7 @@ class _NewsWidgetState extends State<NewsWidget>
               ),
             ),
           ),
-          
-          // Main content area
+
           Positioned(
             top: widget.size * 0.15,
             left: widget.size * 0.2,
@@ -398,8 +335,7 @@ class _NewsWidgetState extends State<NewsWidget>
               ),
             ),
           ),
-          
-          // Category indicator
+
           Positioned(
             top: widget.size * 0.05,
             left: 0,
@@ -422,8 +358,7 @@ class _NewsWidgetState extends State<NewsWidget>
               ),
             ),
           ),
-          
-          // Progress indicator
+
           Positioned(
             bottom: widget.size * 0.05,
             left: 0,
@@ -438,7 +373,7 @@ class _NewsWidgetState extends State<NewsWidget>
                     margin: const EdgeInsets.symmetric(horizontal: 2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: index == _currentIndex 
+                      color: index == _currentIndex
                           ? accentColor
                           : Colors.white.withOpacity(0.3),
                     ),
@@ -452,7 +387,21 @@ class _NewsWidgetState extends State<NewsWidget>
     );
   }
 
-  Widget _buildNewsItem(NewsItem news) {
+  Widget _getCurrentItem() {
+    if (_allItems.isEmpty) return const SizedBox.shrink();
+
+    if (_currentIndex < _newsArticles.length) {
+      return _buildNewsItem(_newsArticles[_currentIndex]);
+    } else {
+      final calendarIndex = _currentIndex - _newsArticles.length;
+      if (calendarIndex < _calendarEvents.length) {
+        return _buildCalendarEvent(_calendarEvents[calendarIndex]);
+      }
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildNewsItem(Map<String, dynamic> article) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -463,7 +412,7 @@ class _NewsWidgetState extends State<NewsWidget>
         ),
         const SizedBox(height: 8),
         Text(
-          news.title,
+          article['title']?.toString() ?? '',
           style: TextStyle(
             fontSize: widget.size * 0.07,
             fontWeight: FontWeight.w600,
@@ -475,7 +424,7 @@ class _NewsWidgetState extends State<NewsWidget>
         ),
         const SizedBox(height: 4),
         Text(
-          news.summary,
+          article['summary']?.toString() ?? '',
           style: TextStyle(
             fontSize: widget.size * 0.05,
             color: Colors.white70,
@@ -486,7 +435,7 @@ class _NewsWidgetState extends State<NewsWidget>
         ),
         const SizedBox(height: 8),
         Text(
-          _formatTimestamp(news.timestamp),
+          _formatTimeAgo(article['publishedAt']?.toString() ?? ''),
           style: TextStyle(
             fontSize: widget.size * 0.04,
             color: Colors.white54,
@@ -520,7 +469,7 @@ class _NewsWidgetState extends State<NewsWidget>
         ),
         const SizedBox(height: 4),
         Text(
-          event.isAllDay 
+          event.isAllDay
               ? 'All Day'
               : _formatTime(event.time),
           style: TextStyle(
@@ -546,36 +495,50 @@ class _NewsWidgetState extends State<NewsWidget>
     );
   }
 
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-    
-    if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
-    } else {
-      return DateFormat('MMM d').format(timestamp);
+  Future<void> _loadSampleCalendar() async {
+    _calendarEvents = [
+      CalendarEvent(
+        title: 'Team Meeting',
+        time: DateTime.now().add(const Duration(hours: 1)),
+        location: 'Conference Room A',
+        isAllDay: false,
+      ),
+      CalendarEvent(
+        title: 'Dentist Appointment',
+        time: DateTime.now().add(const Duration(days: 1, hours: 10)),
+        location: 'Dr. Smith Office',
+        isAllDay: false,
+      ),
+      CalendarEvent(
+        title: 'Weekend Trip',
+        time: DateTime.now().add(const Duration(days: 2)),
+        location: 'Mountain Resort',
+        isAllDay: true,
+      ),
+    ];
+  }
+
+  String _formatTimeAgo(String publishedAt) {
+    if (publishedAt.isEmpty) return '';
+    try {
+      final date = DateTime.tryParse(publishedAt);
+      if (date == null) return publishedAt;
+      final difference = DateTime.now().difference(date);
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}m ago';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}h ago';
+      } else {
+        return DateFormat('MMM d').format(date);
+      }
+    } catch (e) {
+      return publishedAt;
     }
   }
 
   String _formatTime(DateTime time) {
     return DateFormat('h:mm a').format(time);
   }
-}
-
-class NewsItem {
-  final String title;
-  final String summary;
-  final String category;
-  final DateTime timestamp;
-
-  NewsItem({
-    required this.title,
-    required this.summary,
-    required this.category,
-    required this.timestamp,
-  });
 }
 
 class CalendarEvent {
@@ -590,4 +553,4 @@ class CalendarEvent {
     required this.location,
     this.isAllDay = false,
   });
-} 
+}

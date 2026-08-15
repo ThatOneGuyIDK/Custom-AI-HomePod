@@ -19,9 +19,9 @@ class _CalendarAppState extends State<CalendarApp> {
   }
 
   Future<void> _loadEvents() async {
-    // Simulate loading
     await Future.delayed(const Duration(seconds: 1));
     
+    if (!mounted) return;
     setState(() {
       _events = [
         CalendarEvent(

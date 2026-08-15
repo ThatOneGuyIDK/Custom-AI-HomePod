@@ -4,10 +4,16 @@ class AppConfig {
   static const String weatherBaseUrl = 'https://api.openweathermap.org/data/2.5';
 
   // News API Configuration
-  static const String newsApiKey = 'YOUR_GNEWS_API_KEY_HERE';
+  static const String newsApiKey = '860e5e093d3c159d973577a9a6f581ad';
   static const String newsBaseUrl = 'https://gnews.io/api/v4';
   static const Duration newsCacheTimeout = Duration(minutes: 30);
   static const int newsMaxArticlesPerSource = 10;
+  
+  // TimeTree Calendar API Configuration
+  static const String timeTreeApiKey = 'YOUR_TIMETREE_API_KEY_HERE';
+  static const String timeTreeApiSecret = 'YOUR_TIMETREE_API_SECRET_HERE';
+  static const String timeTreeBaseUrl = 'https://api.timetreeapp.com';
+  static const Duration calendarCacheTimeout = Duration(minutes: 15);
   
   // Spotify API Configuration
   static const String spotifyClientId = 'YOUR_SPOTIFY_CLIENT_ID_HERE';
