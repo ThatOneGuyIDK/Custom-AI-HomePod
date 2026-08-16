@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:homepod_assistant/providers/spotifyd_provider.dart';
 
 class MusicApp extends StatefulWidget {
   const MusicApp({super.key});
@@ -8,144 +11,127 @@ class MusicApp extends StatefulWidget {
 }
 
 class _MusicAppState extends State<MusicApp> {
-  bool _isPlaying = false;
-  String _currentTrack = "No track playing";
-  String _currentArtist = "";
-  final String _albumArtUrl = "";
-  double _progress = 0.0;
-  double _volume = 0.7;
-  final String _searchQuery = "";
-  List<Playlist> _playlists = [];
-  List<Song> _recentSongs = [];
-  List<Song> _searchResults = [];
-  bool _isSearching = false;
   int _currentTabIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSeeking = false;
+  double _seekProgress = 0.0;
 
   @override
-  void initState() {
-    super.initState();
-    _initializeMusic();
-  }
-
-  void _initializeMusic() {
-    _playlists = [
-      Playlist("Liked Songs", "❤️", 127, Colors.red),
-      Playlist("Recently Added", "🕒", 45, Colors.blue),
-      Playlist("Chill Vibes", "😌", 23, Colors.green),
-      Playlist("Workout Mix", "💪", 67, Colors.orange),
-      Playlist("Party Time", "🎉", 89, Colors.purple),
-    ];
-
-    _recentSongs = [
-      Song("Blinding Lights", "The Weeknd", "After Hours", "🎵", "3:20"),
-      Song("Shape of You", "Ed Sheeran", "÷", "🎵", "3:53"),
-      Song("Dance Monkey", "Tones and I", "The Kids Are Coming", "🎵", "3:29"),
-      Song("Uptown Funk", "Mark Ronson ft. Bruno Mars", "Uptown Special", "🎵", "4:29"),
-      Song("Despacito", "Luis Fonsi ft. Daddy Yankee", "Vida", "🎵", "4:41"),
-    ];
-
-    _searchResults = [];
-  }
-
-  void _searchMusic(String query) {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _isSearching = false;
-      });
-      return;
-    }
-
-    setState(() {
-      _isSearching = true;
-      // Simulate search results
-      _searchResults = _recentSongs
-          .where((song) =>
-              song.title.toLowerCase().contains(query.toLowerCase()) ||
-              song.artist.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
-
-  void _playSong(Song song) {
-    setState(() {
-      _currentTrack = song.title;
-      _currentArtist = song.artist;
-      _isPlaying = true;
-      _progress = 0.0;
-    });
-    
-    // Simulate progress
-    _startProgressSimulation();
-  }
-
-  void _startProgressSimulation() {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (mounted && _isPlaying && _progress < 1.0) {
-        setState(() {
-          _progress += 0.01;
-        });
-        _startProgressSimulation();
-      }
-    });
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final spotify = context.watch<SpotifydProvider>();
+
     return Container(
       width: 300,
       height: 400,
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.95),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.purple, width: 2),
+        border: Border.all(color: Colors.greenAccent, width: 2),
       ),
       child: Column(
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.purple.withOpacity(0.2),
+              color: Colors.greenAccent.withOpacity(0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.music_note, color: Colors.purple, size: 32),
-                SizedBox(width: 12),
-                Text(
-                  'Music Player',
+                Icon(
+                  Icons.headphones,
+                  color: spotify.isConnected ? Colors.greenAccent : Colors.grey,
+                  size: 32,
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Spotify',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const Spacer(),
+                if (!spotify.isConnected)
+                  Text(
+                    'Offline',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                  ),
               ],
             ),
           ),
-          
-          // Tab Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                _buildTabButton('Now Playing', 0),
-                const SizedBox(width: 8),
-                _buildTabButton('Playlists', 1),
-                const SizedBox(width: 8),
-                _buildTabButton('Search', 2),
-              ],
+
+          if (!spotify.isConnected)
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.cloud_off,
+                      color: Colors.grey,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Spotifyd not connected',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Ensure spotifyd is running',
+                      style: TextStyle(
+                        color: Colors.grey.withOpacity(0.6),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () => spotify.reconnect(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reconnect'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.greenAccent,
+                        foregroundColor: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          
-          // Content based on selected tab
-          Expanded(
-            child: _buildTabContent(),
-          ),
+
+          if (spotify.isConnected) ...[
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  _buildTabButton('Now Playing', 0),
+                  const SizedBox(width: 8),
+                  _buildTabButton('Controls', 1),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: _buildTabContent(spotify),
+            ),
+          ],
         ],
       ),
     );
@@ -163,13 +149,13 @@ class _MusicAppState extends State<MusicApp> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.purple : Colors.transparent,
+            color: isSelected ? Colors.greenAccent : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             text,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.white70,
+              color: isSelected ? Colors.black : Colors.white70,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -180,458 +166,374 @@ class _MusicAppState extends State<MusicApp> {
     );
   }
 
-  Widget _buildTabContent() {
+  Widget _buildTabContent(SpotifydProvider spotify) {
     switch (_currentTabIndex) {
       case 0:
-        return _buildNowPlayingTab();
+        return _buildNowPlayingTab(spotify);
       case 1:
-        return _buildPlaylistsTab();
-      case 2:
-        return _buildSearchTab();
+        return _buildControlsTab(spotify);
       default:
-        return _buildNowPlayingTab();
+        return _buildNowPlayingTab(spotify);
     }
   }
 
-  Widget _buildNowPlayingTab() {
+  Widget _buildNowPlayingTab(SpotifydProvider spotify) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Album Art
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.purple.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(60),
-              border: Border.all(color: Colors.purple, width: 2),
-            ),
-            child: const Icon(
-              Icons.music_note,
-              color: Colors.purple,
-              size: 60,
-            ),
-          ),
-          
+          _buildAlbumArt(spotify),
+
           const SizedBox(height: 20),
-          
-          // Track Info
+
           Text(
-            _currentTrack,
+            spotify.trackTitle,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
-            _currentArtist,
+            spotify.trackArtist,
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
-              fontSize: 16,
+              fontSize: 14,
             ),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          
+          if (spotify.trackAlbum.isNotEmpty && spotify.trackAlbum != 'Unknown Album') ...[
+            const SizedBox(height: 4),
+            Text(
+              spotify.trackAlbum,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+
           const SizedBox(height: 20),
-          
-          // Progress Bar
-          Slider(
-            value: _progress,
-            onChanged: (value) {
-              setState(() {
-                _progress = value;
-              });
-            },
-            activeColor: Colors.purple,
-            inactiveColor: Colors.grey.withOpacity(0.3),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${(_progress * 3.45).toStringAsFixed(0)}:${((_progress * 3.45 % 1) * 60).toStringAsFixed(0).padLeft(2, '0')}',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                ),
-              ),
-              Text(
-                '3:45',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-          
+
+          _buildProgressBar(spotify),
+
+          const SizedBox(height: 24),
+
+          _buildPlaybackControls(spotify),
+
           const SizedBox(height: 20),
-          
-          // Controls
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: () {
-                  // Simulate previous track
-                  if (_recentSongs.isNotEmpty) {
-                    final currentIndex = _recentSongs.indexWhere((song) => song.title == _currentTrack);
-                    final previousIndex = currentIndex > 0 ? currentIndex - 1 : _recentSongs.length - 1;
-                    _playSong(_recentSongs[previousIndex]);
-                  }
-                },
-                icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
-              ),
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    _isPlaying = !_isPlaying;
-                  });
-                  if (_isPlaying) {
-                    _startProgressSimulation();
-                  }
-                },
-                backgroundColor: Colors.purple,
-                child: Icon(
-                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                  color: Colors.white,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  // Simulate next track
-                  if (_recentSongs.isNotEmpty) {
-                    final currentIndex = _recentSongs.indexWhere((song) => song.title == _currentTrack);
-                    final nextIndex = currentIndex < _recentSongs.length - 1 ? currentIndex + 1 : 0;
-                    _playSong(_recentSongs[nextIndex]);
-                  }
-                },
-                icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 20),
-          
-          // Volume Control
-          Row(
-            children: [
-              const Icon(Icons.volume_down, color: Colors.white, size: 20),
-              Expanded(
-                child: Slider(
-                  value: _volume,
-                  onChanged: (value) {
-                    setState(() {
-                      _volume = value;
-                    });
-                  },
-                  activeColor: Colors.purple,
-                  inactiveColor: Colors.grey.withOpacity(0.3),
-                ),
-              ),
-              const Icon(Icons.volume_up, color: Colors.white, size: 20),
-            ],
-          ),
+
+          _buildVolumeControl(spotify),
         ],
       ),
     );
   }
 
-  Widget _buildPlaylistsTab() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(20),
-      itemCount: _playlists.length,
-      itemBuilder: (context, index) {
-        final playlist = _playlists[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: playlist.color.withOpacity(0.5)),
-          ),
-          child: Row(
-            children: [
-              Text(
-                playlist.icon,
-                style: const TextStyle(fontSize: 32),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      playlist.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      '${playlist.songCount} songs',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+  Widget _buildAlbumArt(SpotifydProvider spotify) {
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        color: Colors.greenAccent.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: spotify.isPlaying
+              ? Colors.greenAccent.withOpacity(0.6)
+              : Colors.grey.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: spotify.trackArtUrl.isNotEmpty
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: CachedNetworkImage(
+                imageUrl: spotify.trackArtUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Center(
+                  child: Icon(
+                    Icons.music_note,
+                    color: Colors.greenAccent.withOpacity(0.5),
+                    size: 48,
+                  ),
                 ),
+                errorWidget: (context, url, error) => _buildDefaultAlbumArt(spotify),
               ),
-              IconButton(
-                onPressed: () {
-                  // Show playlist contents
-                  _showPlaylistContents(playlist);
-                },
-                icon: Icon(Icons.play_arrow, color: playlist.color, size: 24),
-              ),
-            ],
-          ),
-        );
-      },
+            )
+          : _buildDefaultAlbumArt(spotify),
     );
   }
 
-  Widget _buildSearchTab() {
+  Widget _buildDefaultAlbumArt(SpotifydProvider spotify) {
+    return Center(
+      child: Icon(
+        Icons.music_note,
+        color: spotify.isPlaying ? Colors.greenAccent : Colors.grey,
+        size: 48,
+      ),
+    );
+  }
+
+  Widget _buildProgressBar(SpotifydProvider spotify) {
+    final progress = _isSeeking ? _seekProgress : spotify.progress;
+    final currentPosition = _formatPosition(
+      (_isSeeking ? _seekProgress * spotify.trackLength : spotify.position).round(),
+    );
+    final total = _formatPosition(spotify.trackLength);
+
+    return Column(
+      children: [
+        Slider(
+          value: progress.clamp(0.0, 1.0),
+          onChanged: (value) {
+            setState(() {
+              _isSeeking = true;
+              _seekProgress = value;
+            });
+          },
+          onChangeEnd: (value) async {
+            await spotify.seek(value);
+            setState(() {
+              _isSeeking = false;
+            });
+          },
+          activeColor: Colors.greenAccent,
+          inactiveColor: Colors.grey.withOpacity(0.3),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              currentPosition,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 11,
+              ),
+            ),
+            Text(
+              total,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlaybackControls(SpotifydProvider spotify) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+          onPressed: spotify.isPlaying || spotify.trackTitle != 'No track playing'
+              ? () => spotify.previous()
+              : null,
+          icon: const Icon(Icons.skip_previous, color: Colors.white, size: 32),
+        ),
+        FloatingActionButton(
+          onPressed: spotify.isPlaying || spotify.trackTitle != 'No track playing'
+              ? () => spotify.playPause()
+              : null,
+          backgroundColor: Colors.greenAccent,
+          child: Icon(
+            spotify.isPlaying ? Icons.pause : Icons.play_arrow,
+            color: Colors.black,
+          ),
+        ),
+        IconButton(
+          onPressed: spotify.isPlaying
+              ? () => spotify.next()
+              : null,
+          icon: const Icon(Icons.skip_next, color: Colors.white, size: 32),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVolumeControl(SpotifydProvider spotify) {
+    return Row(
+      children: [
+        Icon(
+          spotify.volume < 0.3
+              ? Icons.volume_mute
+              : spotify.volume < 0.7
+                  ? Icons.volume_down
+                  : Icons.volume_up,
+          color: Colors.white70,
+          size: 20,
+        ),
+        Expanded(
+          child: Slider(
+            value: spotify.volume,
+            onChanged: (value) => spotify.setVolume(value),
+            activeColor: Colors.greenAccent,
+            inactiveColor: Colors.grey.withOpacity(0.3),
+          ),
+        ),
+        Icon(
+          Icons.volume_up,
+          color: Colors.white70,
+          size: 20,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildControlsTab(SpotifydProvider spotify) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search Bar
-          TextField(
-            onChanged: _searchMusic,
-            decoration: InputDecoration(
-              hintText: 'Search for songs, artists...',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-              prefixIcon: const Icon(Icons.search, color: Colors.purple),
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.purple, width: 2),
-              ),
+          const Text(
+            'Playback Status',
+            style: TextStyle(
+              color: Colors.greenAccent,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
-            style: const TextStyle(color: Colors.white),
           ),
-          
-          const SizedBox(height: 20),
-          
-          // Search Results
-          if (_isSearching && _searchResults.isNotEmpty)
-            Expanded(
-              child: ListView.builder(
-                itemCount: _searchResults.length,
-                itemBuilder: (context, index) {
-                  final song = _searchResults[index];
-                  return _buildSongTile(song);
-                },
-              ),
-            )
-          else if (_isSearching && _searchResults.isEmpty)
-            Expanded(
-              child: Center(
-                child: Text(
-                  'No results found',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            )
-          else
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Recent Songs',
-                    style: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _recentSongs.length,
-                      itemBuilder: (context, index) {
-                        final song = _recentSongs[index];
-                        return _buildSongTile(song);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 12),
+          _buildStatusRow('Status', spotify.playbackStatus),
+          _buildStatusRow('Position', _formatPosition(spotify.position)),
+          _buildStatusRow('Duration', _formatPosition(spotify.trackLength)),
+          _buildStatusRow('Volume', '${(spotify.volume * 100).round()}%'),
+          _buildStatusRow('Progress', '${(spotify.progress * 100).round()}%'),
+
+          const SizedBox(height: 24),
+          const Text(
+            'Quick Actions',
+            style: TextStyle(
+              color: Colors.greenAccent,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
+          ),
+          const SizedBox(height: 12),
+          _buildActionButtons(spotify),
+
+          const SizedBox(height: 24),
+          _buildReconnectButton(spotify),
         ],
       ),
     );
   }
 
-  Widget _buildSongTile(Song song) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.purple.withOpacity(0.3)),
-      ),
+  Widget _buildStatusRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            song.icon,
-            style: const TextStyle(fontSize: 24),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  song.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  song.artist,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            song.duration,
+            label,
             style: TextStyle(
               color: Colors.white.withOpacity(0.6),
-              fontSize: 12,
+              fontSize: 13,
             ),
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: () => _playSong(song),
-            icon: const Icon(Icons.play_arrow, color: Colors.purple, size: 20),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _showPlaylistContents(Playlist playlist) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          width: 280,
-          height: 350,
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: playlist.color, width: 2),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: playlist.color.withOpacity(0.2),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(18),
-                    topRight: Radius.circular(18),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      playlist.icon,
-                      style: const TextStyle(fontSize: 32),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            playlist.name,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            '${playlist.songCount} songs',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+  Widget _buildActionButtons(SpotifydProvider spotify) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                'Play',
+                Icons.play_arrow,
+                () => spotify.play(),
               ),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(20),
-                  itemCount: _recentSongs.length,
-                  itemBuilder: (context, index) {
-                    final song = _recentSongs[index];
-                    return _buildSongTile(song);
-                  },
-                ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildActionButton(
+                'Pause',
+                Icons.pause,
+                () => spotify.pause(),
               ),
-            ],
-          ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                'Previous',
+                Icons.skip_previous,
+                () => spotify.previous(),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _buildActionButton(
+                'Next',
+                Icons.skip_next,
+                () => spotify.next(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton(String label, IconData icon, VoidCallback onPressed) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 16),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white.withOpacity(0.1),
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
+    );
+  }
+
+  Widget _buildReconnectButton(SpotifydProvider spotify) {
+    return Center(
+      child: OutlinedButton.icon(
+        onPressed: () => spotify.reconnect(),
+        icon: const Icon(Icons.refresh, size: 18),
+        label: const Text('Reconnect to Spotifyd'),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.greenAccent),
+          foregroundColor: Colors.greenAccent,
         ),
       ),
     );
   }
+
+  String _formatPosition(int milliseconds) {
+    if (milliseconds <= 0) return '0:00';
+    final duration = Duration(milliseconds: milliseconds);
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds.remainder(60);
+    return '${minutes}:${seconds.toString().padLeft(2, '0')}';
+  }
 }
-
-class Playlist {
-  final String name;
-  final String icon;
-  final int songCount;
-  final Color color;
-
-  Playlist(this.name, this.icon, this.songCount, this.color);
-}
-
-class Song {
-  final String title;
-  final String artist;
-  final String album;
-  final String icon;
-  final String duration;
-
-  Song(this.title, this.artist, this.album, this.icon, this.duration);
-} 

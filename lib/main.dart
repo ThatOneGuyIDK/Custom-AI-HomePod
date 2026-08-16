@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:homepod_assistant/providers/assistant_state.dart';
 import 'package:homepod_assistant/providers/weather_provider.dart';
 import 'package:homepod_assistant/providers/news_provider.dart';
+import 'package:homepod_assistant/providers/spotifyd_provider.dart';
 import 'package:homepod_assistant/screens/home_screen.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ class HomePodApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AssistantState()),
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
         ChangeNotifierProvider(create: (_) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => SpotifydProvider()),
       ],
       child: MaterialApp(
         title: 'HomePod Assistant',

@@ -59,8 +59,7 @@ dependencies:
   device_info_plus: ^9.0.0
   package_info_plus: ^4.0.0
 
-  # Spotify Integration (temporarily disabled for testing)
-  # spotify_sdk: ^3.0.2
+  # Spotifyd (MPRIS) for local Spotify playback control
 
 dev_dependencies:
   flutter_test:
