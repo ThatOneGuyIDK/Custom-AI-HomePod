@@ -36,7 +36,7 @@ class _WeatherAppState extends State<WeatherApp> {
               width: 300,
               height: 400,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.95),
+                color: Colors.black.withValues(alpha: 0.95),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.orange, width: 2),
               ),
@@ -46,7 +46,7 @@ class _WeatherAppState extends State<WeatherApp> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
+                      color: Colors.orange.withValues(alpha: 0.2),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(18),
                         topRight: Radius.circular(18),
@@ -71,7 +71,7 @@ class _WeatherAppState extends State<WeatherApp> {
                               Text(
                                 weatherProvider.locationName,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
+                                  color: Colors.white.withValues(alpha: 0.8),
                                   fontSize: 14,
                                 ),
                                 maxLines: 1,
@@ -218,9 +218,9 @@ class _WeatherAppState extends State<WeatherApp> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.orange.withOpacity(0.5)),
+              border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
             ),
             child: Column(
               children: [
@@ -240,14 +240,14 @@ class _WeatherAppState extends State<WeatherApp> {
                 Text(
                   provider.getCondition(iconCode),
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 18,
                   ),
                 ),
                 Text(
                   'Feels like ${feelsLike.round()}°F',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -331,9 +331,9 @@ class _WeatherAppState extends State<WeatherApp> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
           ),
           child: Row(
             children: [
@@ -359,7 +359,7 @@ class _WeatherAppState extends State<WeatherApp> {
                     Text(
                       provider.getCondition(iconCode),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 12,
                       ),
                       maxLines: 1,
@@ -368,7 +368,7 @@ class _WeatherAppState extends State<WeatherApp> {
                     Text(
                       'Humidity: $humidity% • Wind: ${windSpeed.toStringAsFixed(1)} mph',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         fontSize: 11,
                       ),
                       maxLines: 1,
@@ -391,7 +391,7 @@ class _WeatherAppState extends State<WeatherApp> {
                   Text(
                     'Feels like ${feelsLike.round()}°F',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -406,13 +406,13 @@ class _WeatherAppState extends State<WeatherApp> {
 
   Widget _buildAlertsTab(WeatherProvider provider) {
     if (provider.alerts.isEmpty) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 48),
-            const SizedBox(height: 16),
-            const Text(
+            Icon(Icons.check_circle, color: Colors.green, size: 48),
+            SizedBox(height: 16),
+            Text(
               'No Weather Alerts',
               style: TextStyle(
                 color: Colors.white,
@@ -420,8 +420,8 @@ class _WeatherAppState extends State<WeatherApp> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-            const Text(
+            SizedBox(height: 8),
+            Text(
               'All clear! No severe weather expected.',
               style: TextStyle(
                 color: Colors.white70,
@@ -446,7 +446,7 @@ class _WeatherAppState extends State<WeatherApp> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: color),
           ),
@@ -500,7 +500,7 @@ class _WeatherAppState extends State<WeatherApp> {
               Text(
                 'Expected: ${_formatAlertTime(alert)}',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 12,
                 ),
               ),
@@ -515,9 +515,9 @@ class _WeatherAppState extends State<WeatherApp> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -536,7 +536,7 @@ class _WeatherAppState extends State<WeatherApp> {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 10,
             ),
             textAlign: TextAlign.center,
@@ -570,7 +570,7 @@ class _WeatherAppState extends State<WeatherApp> {
           width: 280,
           height: 350,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.95),
+            color: Colors.black.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.orange, width: 2),
           ),
@@ -579,7 +579,7 @@ class _WeatherAppState extends State<WeatherApp> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.2),
+                  color: Colors.orange.withValues(alpha: 0.2),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18),
@@ -606,10 +606,10 @@ class _WeatherAppState extends State<WeatherApp> {
                   onSubmitted: (query) => _searchLocation(query, weatherProvider),
                   decoration: InputDecoration(
                     hintText: 'Enter city name...',
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                     prefixIcon: const Icon(Icons.location_city, color: Colors.orange),
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
+                    fillColor: Colors.white.withValues(alpha: 0.1),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
@@ -648,7 +648,7 @@ class _WeatherAppState extends State<WeatherApp> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             trailing: isCurrent
-                                ? Icon(Icons.check, color: Colors.orange)
+                                ? const Icon(Icons.check, color: Colors.orange)
                                 : IconButton(
                                     icon: const Icon(Icons.favorite, color: Colors.red),
                                     onPressed: () => _removeFromFavorites(location, weatherProvider),

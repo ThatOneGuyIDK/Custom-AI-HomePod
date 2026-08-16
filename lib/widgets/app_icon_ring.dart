@@ -95,14 +95,14 @@ class _AppIconRingState extends State<AppIconRing> {
         height: 70,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: appData.color.withOpacity(0.15),
+          color: appData.color.withValues(alpha: 0.15),
           border: Border.all(
-            color: appData.color.withOpacity(0.6),
+            color: appData.color.withValues(alpha: 0.6),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: appData.color.withOpacity(0.4),
+              color: appData.color.withValues(alpha: 0.4),
               blurRadius: 12,
               spreadRadius: 2,
             ),
@@ -192,7 +192,7 @@ class _AppIconRingState extends State<AppIconRing> {
           width: 300,
           height: 400,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.95),
+            color: Colors.black.withValues(alpha: 0.95),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.red, width: 2),
           ),
@@ -202,7 +202,7 @@ class _AppIconRingState extends State<AppIconRing> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.2),
+                  color: Colors.red.withValues(alpha: 0.2),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18),
@@ -234,9 +234,9 @@ class _AppIconRingState extends State<AppIconRing> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.red.withOpacity(0.5)),
+                          border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                         ),
                         child: Column(
                           children: [
@@ -258,7 +258,7 @@ class _AppIconRingState extends State<AppIconRing> {
                             Text(
                               assistantState.isListening ? 'Speak now...' : 'Tap to activate',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontSize: 16,
                               ),
                             ),
@@ -272,9 +272,9 @@ class _AppIconRingState extends State<AppIconRing> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
+                          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                         ),
                         child: Row(
                           children: [

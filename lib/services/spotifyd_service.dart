@@ -149,7 +149,7 @@ class SpotifydService {
 
   Future<String?> _getMetadata(String property) async {
     try {
-      final result = await _runPlayerctl(['metadata', '-F', '$property', '--player=$_playerName']);
+      final result = await _runPlayerctl(['metadata', '-F', property, '--player=$_playerName']);
       final output = result.stdout.toString().trim();
       return output.isEmpty ? null : output;
     } catch (e) {

@@ -10,7 +10,7 @@ class CalendarService {
   CalendarService({required this.apiKey, required this.apiSecret});
 
   Future<List<Map<String, dynamic>>> getCalendars() async {
-    final url = '$baseUrl/calendars';
+    const url = '$baseUrl/calendars';
     final response = await _safeRequest(url, 'calendars list');
     return (response['calendars'] as List<dynamic>?)
             ?.map((e) => Map<String, dynamic>.from(e))

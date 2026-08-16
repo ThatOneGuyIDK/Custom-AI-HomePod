@@ -17,7 +17,7 @@ class AssistantIndicator extends StatelessWidget {
             color: _getIndicatorColor(assistantState.status),
             boxShadow: [
               BoxShadow(
-                color: _getIndicatorColor(assistantState.status).withOpacity(0.3),
+                color: _getIndicatorColor(assistantState.status).withValues(alpha: 0.3),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),

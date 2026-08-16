@@ -64,7 +64,7 @@ class _CalendarAppState extends State<CalendarApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.pink, width: 2),
       ),
@@ -74,7 +74,7 @@ class _CalendarAppState extends State<CalendarApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.pink.withOpacity(0.2),
+              color: Colors.pink.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -101,9 +101,9 @@ class _CalendarAppState extends State<CalendarApp> {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.pink.withOpacity(0.5)),
+              border: Border.all(color: Colors.pink.withValues(alpha: 0.5)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,7 +135,7 @@ class _CalendarAppState extends State<CalendarApp> {
                     Text(
                       _getDayName(_selectedDate.weekday),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -143,7 +143,7 @@ class _CalendarAppState extends State<CalendarApp> {
                     Text(
                       '${_selectedDate.year}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                       ),
                     ),
@@ -182,7 +182,7 @@ class _CalendarAppState extends State<CalendarApp> {
                         Text(
                           '${_events.length} events',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                           ),
                         ),
@@ -201,10 +201,10 @@ class _CalendarAppState extends State<CalendarApp> {
                           margin: const EdgeInsets.only(bottom: 6),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: _getEventColor(event.type).withOpacity(0.5),
+                              color: _getEventColor(event.type).withValues(alpha: 0.5),
                             ),
                           ),
                           child: Row(
@@ -237,7 +237,7 @@ class _CalendarAppState extends State<CalendarApp> {
                                       children: [
                                         Icon(
                                           Icons.access_time,
-                                          color: Colors.white.withOpacity(0.6),
+                                          color: Colors.white.withValues(alpha: 0.6),
                                           size: 12,
                                         ),
                                         const SizedBox(width: 4),
@@ -245,7 +245,7 @@ class _CalendarAppState extends State<CalendarApp> {
                                           child: Text(
                                             '${event.time} (${event.duration})',
                                             style: TextStyle(
-                                              color: Colors.white.withOpacity(0.7),
+                                              color: Colors.white.withValues(alpha: 0.7),
                                               fontSize: 11,
                                             ),
                                             maxLines: 1,

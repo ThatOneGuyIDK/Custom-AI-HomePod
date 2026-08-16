@@ -30,7 +30,7 @@ class _MusicAppState extends State<MusicApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.greenAccent, width: 2),
       ),
@@ -39,7 +39,7 @@ class _MusicAppState extends State<MusicApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.greenAccent.withOpacity(0.15),
+              color: Colors.greenAccent.withValues(alpha: 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -63,7 +63,7 @@ class _MusicAppState extends State<MusicApp> {
                 ),
                 const Spacer(),
                 if (!spotify.isConnected)
-                  Text(
+                  const Text(
                     'Offline',
                     style: TextStyle(
                       color: Colors.grey,
@@ -80,13 +80,13 @@ class _MusicAppState extends State<MusicApp> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.cloud_off,
                       color: Colors.grey,
                       size: 48,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Spotifyd not connected',
                       style: TextStyle(
                         color: Colors.grey,
@@ -97,7 +97,7 @@ class _MusicAppState extends State<MusicApp> {
                     Text(
                       'Ensure spotifyd is running',
                       style: TextStyle(
-                        color: Colors.grey.withOpacity(0.6),
+                        color: Colors.grey.withValues(alpha: 0.6),
                         fontSize: 12,
                       ),
                     ),
@@ -201,7 +201,7 @@ class _MusicAppState extends State<MusicApp> {
           Text(
             spotify.trackArtist,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
             ),
             textAlign: TextAlign.center,
@@ -213,7 +213,7 @@ class _MusicAppState extends State<MusicApp> {
             Text(
               spotify.trackAlbum,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,
@@ -243,12 +243,12 @@ class _MusicAppState extends State<MusicApp> {
       width: 120,
       height: 120,
       decoration: BoxDecoration(
-        color: Colors.greenAccent.withOpacity(0.15),
+        color: Colors.greenAccent.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: spotify.isPlaying
-              ? Colors.greenAccent.withOpacity(0.6)
-              : Colors.grey.withOpacity(0.3),
+              ? Colors.greenAccent.withValues(alpha: 0.6)
+              : Colors.grey.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -261,7 +261,7 @@ class _MusicAppState extends State<MusicApp> {
                 placeholder: (context, url) => Center(
                   child: Icon(
                     Icons.music_note,
-                    color: Colors.greenAccent.withOpacity(0.5),
+                    color: Colors.greenAccent.withValues(alpha: 0.5),
                     size: 48,
                   ),
                 ),
@@ -306,7 +306,7 @@ class _MusicAppState extends State<MusicApp> {
             });
           },
           activeColor: Colors.greenAccent,
-          inactiveColor: Colors.grey.withOpacity(0.3),
+          inactiveColor: Colors.grey.withValues(alpha: 0.3),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -314,14 +314,14 @@ class _MusicAppState extends State<MusicApp> {
             Text(
               currentPosition,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 11,
               ),
             ),
             Text(
               total,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 11,
               ),
             ),
@@ -378,10 +378,10 @@ class _MusicAppState extends State<MusicApp> {
             value: spotify.volume,
             onChanged: (value) => spotify.setVolume(value),
             activeColor: Colors.greenAccent,
-            inactiveColor: Colors.grey.withOpacity(0.3),
+            inactiveColor: Colors.grey.withValues(alpha: 0.3),
           ),
         ),
-        Icon(
+        const Icon(
           Icons.volume_up,
           color: Colors.white70,
           size: 20,
@@ -439,7 +439,7 @@ class _MusicAppState extends State<MusicApp> {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 13,
             ),
           ),
@@ -508,7 +508,7 @@ class _MusicAppState extends State<MusicApp> {
       icon: Icon(icon, size: 16),
       label: Text(label),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.1),
+        backgroundColor: Colors.white.withValues(alpha: 0.1),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
       ),
@@ -534,6 +534,6 @@ class _MusicAppState extends State<MusicApp> {
     final duration = Duration(milliseconds: milliseconds);
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
-    return '${minutes}:${seconds.toString().padLeft(2, '0')}';
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 }

@@ -80,9 +80,9 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -117,9 +117,9 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.greenAccent.withOpacity(0.1),
+        color: Colors.greenAccent.withValues(alpha: 0.1),
         border: Border.all(
-          color: Colors.greenAccent.withOpacity(0.3),
+          color: Colors.greenAccent.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -166,14 +166,14 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            accentColor.withOpacity(0.2),
-            accentColor.withOpacity(0.1),
+            accentColor.withValues(alpha: 0.2),
+            accentColor.withValues(alpha: 0.1),
             Colors.transparent,
           ],
           stops: const [0.0, 0.7, 1.0],
         ),
         border: Border.all(
-          color: accentColor.withOpacity(0.4),
+          color: accentColor.withValues(alpha: 0.4),
           width: 2,
         ),
       ),
@@ -263,7 +263,7 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
                           color: accentColor,
                           boxShadow: [
                             BoxShadow(
-                              color: accentColor.withOpacity(0.3),
+                              color: accentColor.withValues(alpha: 0.3),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -292,7 +292,7 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
                 height: widget.size * 0.12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
                 child: Icon(
                   Icons.skip_previous,
@@ -313,7 +313,7 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
                 height: widget.size * 0.12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
                 child: Icon(
                   Icons.skip_next,
@@ -340,7 +340,7 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
           height: size,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            color: accentColor.withOpacity(0.3),
+            color: accentColor.withValues(alpha: 0.3),
             child: Center(
               child: Icon(
                 Icons.music_note,
@@ -363,7 +363,7 @@ class _SpotifyWidgetState extends State<SpotifyWidget>
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: accentColor.withOpacity(0.3),
+        color: accentColor.withValues(alpha: 0.3),
       ),
       child: Center(
         child: Icon(
@@ -393,7 +393,7 @@ class ProgressRingPainter extends CustomPainter {
     final radius = (size.width - strokeWidth) / 2;
 
     final backgroundPaint = Paint()
-      ..color = color.withOpacity(0.2)
+      ..color = color.withValues(alpha: 0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth;
 

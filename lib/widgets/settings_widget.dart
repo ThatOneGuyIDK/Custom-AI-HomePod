@@ -199,9 +199,9 @@ class _SettingsWidgetState extends State<SettingsWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         border: Border.all(
-          color: (widget.accentColor ?? Colors.teal).withOpacity(0.3),
+          color: (widget.accentColor ?? Colors.teal).withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -226,14 +226,14 @@ class _SettingsWidgetState extends State<SettingsWidget>
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              accentColor.withOpacity(0.2),
-              accentColor.withOpacity(0.1),
+              accentColor.withValues(alpha: 0.2),
+              accentColor.withValues(alpha: 0.1),
               Colors.transparent,
             ],
             stops: const [0.0, 0.7, 1.0],
           ),
           border: Border.all(
-            color: accentColor.withOpacity(0.4),
+            color: accentColor.withValues(alpha: 0.4),
             width: 2,
           ),
         ),
@@ -299,7 +299,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                 height: widget.size * 0.08,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
                 child: Icon(
                   Icons.expand_more,
@@ -329,14 +329,14 @@ class _SettingsWidgetState extends State<SettingsWidget>
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  accentColor.withOpacity(0.3),
-                  accentColor.withOpacity(0.2),
+                  accentColor.withValues(alpha: 0.3),
+                  accentColor.withValues(alpha: 0.2),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.8, 1.0],
               ),
               border: Border.all(
-                color: accentColor.withOpacity(0.6),
+                color: accentColor.withValues(alpha: 0.6),
                 width: 3,
               ),
             ),
@@ -353,7 +353,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                       height: widget.size * 0.08,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.red.withOpacity(0.8),
+                        color: Colors.red.withValues(alpha: 0.8),
                       ),
                       child: Icon(
                         Icons.close,
@@ -431,7 +431,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: accentColor.withOpacity(0.3),
+                                  color: accentColor.withValues(alpha: 0.3),
                                   blurRadius: 10,
                                   spreadRadius: 2,
                                 ),
@@ -494,18 +494,18 @@ class _SettingsWidgetState extends State<SettingsWidget>
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: Colors.white),
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
+          fillColor: Colors.white.withValues(alpha: 0.1),
         ),
         onChanged: onChanged,
         controller: TextEditingController(text: value),
@@ -532,18 +532,18 @@ class _SettingsWidgetState extends State<SettingsWidget>
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: Colors.white),
           ),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
+          fillColor: Colors.white.withValues(alpha: 0.1),
         ),
         onChanged: onChanged,
         controller: TextEditingController(text: value),
@@ -567,7 +567,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: widget.accentColor ?? Colors.teal,
+            activeThumbColor: widget.accentColor ?? Colors.teal,
           ),
         ],
       ),
@@ -591,7 +591,7 @@ class _SettingsWidgetState extends State<SettingsWidget>
             value: value,
             onChanged: onChanged,
             activeColor: widget.accentColor ?? Colors.teal,
-            inactiveColor: Colors.white.withOpacity(0.3),
+            inactiveColor: Colors.white.withValues(alpha: 0.3),
           ),
         ],
       ),

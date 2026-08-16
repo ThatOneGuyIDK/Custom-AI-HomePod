@@ -153,9 +153,9 @@ class _NewsWidgetState extends State<NewsWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         border: Border.all(
-          color: (widget.accentColor ?? Colors.orange).withOpacity(0.3),
+          color: (widget.accentColor ?? Colors.orange).withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -174,9 +174,9 @@ class _NewsWidgetState extends State<NewsWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withValues(alpha: 0.1),
         border: Border.all(
-          color: Colors.red.withOpacity(0.3),
+          color: Colors.red.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -202,7 +202,7 @@ class _NewsWidgetState extends State<NewsWidget>
             Text(
               'Tap to retry',
               style: TextStyle(
-                color: Colors.red.withOpacity(0.7),
+                color: Colors.red.withValues(alpha: 0.7),
                 fontSize: widget.size * 0.06,
               ),
             ),
@@ -218,9 +218,9 @@ class _NewsWidgetState extends State<NewsWidget>
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+          color: Colors.grey.withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -246,7 +246,7 @@ class _NewsWidgetState extends State<NewsWidget>
             Text(
               'Check back later',
               style: TextStyle(
-                color: Colors.grey.withOpacity(0.7),
+                color: Colors.grey.withValues(alpha: 0.7),
                 fontSize: widget.size * 0.06,
               ),
             ),
@@ -267,14 +267,14 @@ class _NewsWidgetState extends State<NewsWidget>
         shape: BoxShape.circle,
         gradient: RadialGradient(
           colors: [
-            accentColor.withOpacity(0.2),
-            accentColor.withOpacity(0.1),
+            accentColor.withValues(alpha: 0.2),
+            accentColor.withValues(alpha: 0.1),
             Colors.transparent,
           ],
           stops: const [0.0, 0.7, 1.0],
         ),
         border: Border.all(
-          color: accentColor.withOpacity(0.4),
+          color: accentColor.withValues(alpha: 0.4),
           width: 2,
         ),
       ),
@@ -290,7 +290,7 @@ class _NewsWidgetState extends State<NewsWidget>
                 height: widget.size * 0.1,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
                 child: Icon(
                   Icons.chevron_left,
@@ -311,7 +311,7 @@ class _NewsWidgetState extends State<NewsWidget>
                 height: widget.size * 0.1,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                 ),
                 child: Icon(
                   Icons.chevron_right,
@@ -344,7 +344,7 @@ class _NewsWidgetState extends State<NewsWidget>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.8),
+                  color: accentColor.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -375,7 +375,7 @@ class _NewsWidgetState extends State<NewsWidget>
                       shape: BoxShape.circle,
                       color: index == _currentIndex
                           ? accentColor
-                          : Colors.white.withOpacity(0.3),
+                          : Colors.white.withValues(alpha: 0.3),
                     ),
                   );
                 }),

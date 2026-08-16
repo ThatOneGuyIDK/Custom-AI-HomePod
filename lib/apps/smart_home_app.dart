@@ -96,7 +96,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.blue, width: 2),
       ),
@@ -106,7 +106,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -133,7 +133,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _isConnected ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+              color: _isConnected ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: _isConnected ? Colors.green : Colors.red,
@@ -165,7 +165,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   Text(
                     '${_devices.length} devices',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 12,
                     ),
                   ),
@@ -248,10 +248,10 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: device.isOn ? device.color : Colors.grey.withOpacity(0.5),
+              color: device.isOn ? device.color : Colors.grey.withValues(alpha: 0.5),
               width: 1,
             ),
           ),
@@ -282,7 +282,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                         Text(
                           device.brand,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 11,
                           ),
                           maxLines: 1,
@@ -292,7 +292,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                           Text(
                             'Last updated: ${_formatTime(device.lastUpdated!)}',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 10,
                             ),
                           ),
@@ -302,8 +302,8 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   Switch(
                     value: device.isOn,
                     onChanged: (value) => _toggleDevice(device),
-                    activeColor: device.color,
-                    activeTrackColor: device.color.withOpacity(0.3),
+                    activeThumbColor: device.color,
+                    activeTrackColor: device.color.withValues(alpha: 0.3),
                   ),
                 ],
               ),
@@ -347,10 +347,10 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: automation.isActive ? automation.color : Colors.grey.withOpacity(0.5),
+              color: automation.isActive ? automation.color : Colors.grey.withValues(alpha: 0.5),
               width: 1,
             ),
           ),
@@ -391,7 +391,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                         Text(
                           automation.description,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                             fontSize: 11,
                           ),
                           maxLines: 2,
@@ -403,8 +403,8 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   Switch(
                     value: automation.isActive,
                     onChanged: (value) => _toggleAutomation(automation),
-                    activeColor: automation.color,
-                    activeTrackColor: automation.color.withOpacity(0.3),
+                    activeThumbColor: automation.color,
+                    activeTrackColor: automation.color.withValues(alpha: 0.3),
                   ),
                 ],
               ),
@@ -450,9 +450,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.blue.withOpacity(0.5)),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.5)),
             ),
             child: Column(
               children: [
@@ -476,7 +476,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                       ? 'Searching for new smart devices on your network'
                       : 'Find and add new smart home devices',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
@@ -505,9 +505,9 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.withOpacity(0.3)),
+              border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
             ),
             child: Column(
               children: [
@@ -523,7 +523,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                 Text(
                   'Add devices manually if they don\'t appear automatically',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 12,
                   ),
                   textAlign: TextAlign.center,
@@ -552,7 +552,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
       icon: Icon(icon, color: Colors.white, size: 16),
       label: Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.grey.withOpacity(0.3),
+        backgroundColor: Colors.grey.withValues(alpha: 0.3),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         minimumSize: const Size(0, 32),
       ),
@@ -578,7 +578,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black.withOpacity(0.95),
+        backgroundColor: Colors.black.withValues(alpha: 0.95),
         title: Text(
           device.name,
           style: const TextStyle(color: Colors.white),
@@ -609,7 +609,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black.withOpacity(0.95),
+        backgroundColor: Colors.black.withValues(alpha: 0.95),
         title: const Text(
           'Brightness Control',
           style: TextStyle(color: Colors.white),
@@ -632,7 +632,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                       brightness = value;
                     },
                     activeColor: device.color,
-                    inactiveColor: Colors.grey.withOpacity(0.3),
+                    inactiveColor: Colors.grey.withValues(alpha: 0.3),
                   ),
                 ),
                 const Icon(Icons.brightness_high, color: Colors.white, size: 20),
@@ -672,7 +672,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black.withOpacity(0.95),
+        backgroundColor: Colors.black.withValues(alpha: 0.95),
         title: const Text(
           'Temperature Control',
           style: TextStyle(color: Colors.white),
@@ -716,7 +716,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                 temperature = value;
               },
               activeColor: device.color,
-              inactiveColor: Colors.grey.withOpacity(0.3),
+              inactiveColor: Colors.grey.withValues(alpha: 0.3),
             ),
           ],
         ),
@@ -757,7 +757,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black.withOpacity(0.95),
+        backgroundColor: Colors.black.withValues(alpha: 0.95),
         title: const Text(
           'Edit Automation',
           style: TextStyle(color: Colors.white),
@@ -779,7 +779,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
                   onChanged: (value) {
                     automation.isActive = value;
                   },
-                  activeColor: automation.color,
+                  activeThumbColor: automation.color,
                 ),
               ],
             ),
@@ -816,7 +816,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black.withOpacity(0.95),
+        backgroundColor: Colors.black.withValues(alpha: 0.95),
         title: const Text(
           'Add Device Manually',
           style: TextStyle(color: Colors.white),
@@ -847,7 +847,7 @@ class _SmartHomeAppState extends State<SmartHomeApp> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<DeviceType>(
-              value: selectedType,
+              initialValue: selectedType,
               onChanged: (DeviceType? value) {
                 if (value != null) selectedType = value;
               },

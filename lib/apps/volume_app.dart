@@ -20,7 +20,7 @@ class _VolumeAppState extends State<VolumeApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.green, width: 2),
       ),
@@ -30,7 +30,7 @@ class _VolumeAppState extends State<VolumeApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.2),
+              color: Colors.green.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -57,9 +57,9 @@ class _VolumeAppState extends State<VolumeApp> {
             margin: const EdgeInsets.all(20),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.green.withOpacity(0.5)),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
             ),
             child: Column(
               children: [
@@ -102,7 +102,7 @@ class _VolumeAppState extends State<VolumeApp> {
                     });
                   },
                   activeColor: Colors.green,
-                  inactiveColor: Colors.grey.withOpacity(0.3),
+                  inactiveColor: Colors.grey.withValues(alpha: 0.3),
                   min: 0.0,
                   max: 1.0,
                 ),
@@ -247,7 +247,7 @@ class _VolumeAppState extends State<VolumeApp> {
             value: volume,
             onChanged: onChanged,
             activeColor: color,
-            inactiveColor: color.withOpacity(0.3),
+            inactiveColor: color.withValues(alpha: 0.3),
             min: 0.0,
             max: 1.0,
           ),

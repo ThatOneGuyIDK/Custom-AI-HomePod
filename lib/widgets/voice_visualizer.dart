@@ -128,8 +128,8 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
         
         // Use purple/orange color for processing
         final ringColor = i % 2 == 0 
-            ? const Color(0xFF9333EA).withOpacity(opacity) // Purple
-            : orangeColor.withOpacity(opacity);
+            ? const Color(0xFF9333EA).withValues(alpha: opacity) // Purple
+            : orangeColor.withValues(alpha: opacity);
         
         final ringPaint = Paint()
           ..color = ringColor
@@ -142,7 +142,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       // Draw pulsing center dot
       final centerPulse = 0.8 + (pulseValue * 0.4);
       final centerPaint = Paint()
-        ..color = const Color(0xFF9333EA).withOpacity(0.8)
+        ..color = const Color(0xFF9333EA).withValues(alpha: 0.8)
         ..style = PaintingStyle.fill;
       
       canvas.drawCircle(center, 15.0 * centerPulse, centerPaint);
@@ -197,7 +197,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
         
         // Draw the wavy wave with thickness
         final wavePaint = Paint()
-          ..color = waveColor.withOpacity(opacity)
+          ..color = waveColor.withValues(alpha: opacity)
           ..style = PaintingStyle.stroke
           ..strokeWidth = waveThickness
           ..strokeCap = StrokeCap.round;
@@ -231,7 +231,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
         glowPath.close();
         
         final glowPaint = Paint()
-          ..color = waveColor.withOpacity(opacity * 0.3)
+          ..color = waveColor.withValues(alpha: opacity * 0.3)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
 
@@ -261,7 +261,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       corePath.close();
       
       final corePaint = Paint()
-        ..color = navyColor.withOpacity(0.9)
+        ..color = navyColor.withValues(alpha: 0.9)
         ..style = PaintingStyle.fill;
       
       canvas.drawPath(corePath, corePaint);
@@ -289,7 +289,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       glowPath2.close();
       
       final glowPaint2 = Paint()
-        ..color = orangeColor.withOpacity(0.4)
+        ..color = orangeColor.withValues(alpha: 0.4)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
       
@@ -318,7 +318,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       outerPath.close();
       
       final outerRingPaint = Paint()
-        ..color = navyColor.withOpacity(0.2 + volume * 0.2)
+        ..color = navyColor.withValues(alpha: 0.2 + volume * 0.2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0 + (volume * 3.0); // Thicker when louder
       
@@ -334,7 +334,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
         
         final dotOpacity = 0.4 * (0.5 + volume * 0.5);
         final dotPaint = Paint()
-          ..color = orangeColor.withOpacity(dotOpacity)
+          ..color = orangeColor.withValues(alpha: dotOpacity)
           ..style = PaintingStyle.fill;
         
         final dotSize = 2.0 + (volume * 3.0); // Larger dots when louder
@@ -366,7 +366,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       wavePath2.close();
       
       final wavePathPaint = Paint()
-        ..color = navyColor.withOpacity(0.3 + volume * 0.3)
+        ..color = navyColor.withValues(alpha: 0.3 + volume * 0.3)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0 + (volume * 4.0); // Thicker when louder
       
@@ -396,7 +396,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       idlePath.close();
       
       final idlePaint = Paint()
-        ..color = navyColor.withOpacity(0.2)
+        ..color = navyColor.withValues(alpha: 0.2)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
       
@@ -425,13 +425,13 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       corePath2.close();
       
       final corePaint2 = Paint()
-        ..color = orangeColor.withOpacity(0.4)
+        ..color = orangeColor.withValues(alpha: 0.4)
         ..style = PaintingStyle.fill;
       
       canvas.drawPath(corePath2, corePaint2);
       
       // Very subtle outer ring with wavy edge - Navy
-      final outerRadius = idleRadius + 10.0;
+      const outerRadius = idleRadius + 10.0;
       final outerPath2 = Path();
       firstPoint = true;
       
@@ -453,7 +453,7 @@ class SiriVoiceVisualizerPainter extends CustomPainter {
       outerPath2.close();
       
       final outerPaint = Paint()
-        ..color = navyColor.withOpacity(0.1)
+        ..color = navyColor.withValues(alpha: 0.1)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
       

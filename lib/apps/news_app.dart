@@ -38,7 +38,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.yellow, width: 2),
       ),
@@ -47,7 +47,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.yellow.withOpacity(0.2),
+              color: Colors.yellow.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -97,7 +97,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                       backgroundColor: Colors.transparent,
                       selectedColor: Colors.yellow,
                       side: BorderSide(
-                        color: isSelected ? Colors.yellow : Colors.grey.withOpacity(0.5),
+                        color: isSelected ? Colors.yellow : Colors.grey.withValues(alpha: 0.5),
                       ),
                     ),
                   );
@@ -120,7 +120,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       color: Colors.red,
                       size: 48,
@@ -131,7 +131,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                       child: Text(
                         widget.provider.error,
                         style: TextStyle(
-                          color: Colors.red.withOpacity(0.8),
+                          color: Colors.red.withValues(alpha: 0.8),
                           fontSize: 14,
                         ),
                         textAlign: TextAlign.center,
@@ -147,7 +147,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.newspaper,
                       color: Colors.grey,
                       size: 48,
@@ -156,7 +156,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                     Text(
                       'No news available',
                       style: TextStyle(
-                        color: Colors.grey.withOpacity(0.7),
+                        color: Colors.grey.withValues(alpha: 0.7),
                         fontSize: 14,
                       ),
                     ),
@@ -170,14 +170,14 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 itemCount: articles.length,
                 itemBuilder: (context, index) {
-                  final article = articles[index] as Map<String, dynamic>;
+                  final article = articles[index];
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.yellow.withOpacity(0.3)),
+                      border: Border.all(color: Colors.yellow.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +221,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                         Text(
                           article['summary']?.toString() ?? '',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 14,
                           ),
                           maxLines: 2,
@@ -231,7 +231,7 @@ class _NewsAppContentState extends State<_NewsAppContent> {
                         Text(
                           _formatTimeAgo(article['publishedAt']?.toString() ?? ''),
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                           ),
                         ),

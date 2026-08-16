@@ -78,7 +78,7 @@ class WeatherWidget extends StatelessWidget {
                 color: Colors.red,
                 size: size * 0.2,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Weather Error',
                 style: TextStyle(
@@ -87,7 +87,7 @@ class WeatherWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Tap to retry',
                 style: TextStyle(
@@ -125,7 +125,7 @@ class WeatherWidget extends StatelessWidget {
                 color: Colors.grey,
                 size: size * 0.2,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'No Weather Data',
                 style: TextStyle(
@@ -134,7 +134,7 @@ class WeatherWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Tap to load',
                 style: TextStyle(

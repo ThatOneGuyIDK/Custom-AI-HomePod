@@ -104,7 +104,7 @@ class _SettingsAppState extends State<SettingsApp> {
       width: 300,
       height: 400,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.95),
+        color: Colors.black.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.grey, width: 2),
       ),
@@ -114,7 +114,7 @@ class _SettingsAppState extends State<SettingsApp> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18),
                 topRight: Radius.circular(18),
@@ -153,7 +153,7 @@ class _SettingsAppState extends State<SettingsApp> {
                         _notificationsEnabled = value;
                       });
                     },
-                    activeColor: Colors.grey,
+                    activeThumbColor: Colors.grey,
                   ),
                 ),
                 
@@ -179,7 +179,7 @@ class _SettingsAppState extends State<SettingsApp> {
                          }
                        },
                        activeColor: Colors.grey,
-                       inactiveColor: Colors.grey.withOpacity(0.3),
+                       inactiveColor: Colors.grey.withValues(alpha: 0.3),
                      ),
                    ),
                  ),
@@ -206,7 +206,7 @@ class _SettingsAppState extends State<SettingsApp> {
                           }
                         },
                       activeColor: Colors.grey,
-                      inactiveColor: Colors.grey.withOpacity(0.3),
+                      inactiveColor: Colors.grey.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
@@ -354,7 +354,7 @@ class _SettingsAppState extends State<SettingsApp> {
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontSize: 12,
           ),
         ),
@@ -481,9 +481,9 @@ class _SettingsAppState extends State<SettingsApp> {
                     expands: true,
                     decoration: InputDecoration(
                       hintText: 'Enter assistant system prompt...',
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: Colors.white.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -567,7 +567,7 @@ class _SettingsAppState extends State<SettingsApp> {
          width: 320,
          height: 400,
          decoration: BoxDecoration(
-           color: Colors.black.withOpacity(0.95),
+           color: Colors.black.withValues(alpha: 0.95),
            borderRadius: BorderRadius.circular(20),
            border: Border.all(color: Colors.grey, width: 2),
          ),
@@ -577,7 +577,7 @@ class _SettingsAppState extends State<SettingsApp> {
              Container(
                padding: const EdgeInsets.all(20),
                decoration: BoxDecoration(
-                 color: Colors.grey.withOpacity(0.2),
+                 color: Colors.grey.withValues(alpha: 0.2),
                  borderRadius: const BorderRadius.only(
                    topLeft: Radius.circular(18),
                    topRight: Radius.circular(18),
@@ -611,10 +611,10 @@ class _SettingsAppState extends State<SettingsApp> {
                  },
                  decoration: InputDecoration(
                    hintText: 'Search for a city...',
-                   hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                   hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
                    filled: true,
-                   fillColor: Colors.white.withOpacity(0.1),
+                   fillColor: Colors.white.withValues(alpha: 0.1),
                    border: OutlineInputBorder(
                      borderRadius: BorderRadius.circular(12),
                      borderSide: BorderSide.none,
